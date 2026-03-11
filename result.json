@@ -1,0 +1,2328 @@
+{
+  "source_file": "tax_returns_business/tax_returns_business_002.pdf",
+  "total_pages": 25,
+  "form_type": "1120-S",
+  "extraction_method": "llm",
+  "structured_data": {
+    "form_type": "1120-S",
+    "tax_year": "2022",
+    "taxpayer": {
+      "name": "RAIN DROP SERVICES LLC",
+      "ein": "84-4391731",
+      "ssn": null,
+      "address": {
+        "street": "855 TROSPER RD 108-215",
+        "city": "TUMWATER",
+        "state": "WA",
+        "zip_code": "98512",
+        "country": "US"
+      }
+    },
+    "header": {
+      "business_activity_code": "236110",
+      "business_activity": "CONSTRUCTION",
+      "product_or_service": "RESIDENTIAL",
+      "date_incorporated": "01-22-2020",
+      "date_s_election_effective": null,
+      "accounting_method": "accrual",
+      "number_of_shareholders": 1,
+      "total_assets": 129166
+    },
+    "income": {
+      "line_1a_gross_receipts": 374221,
+      "line_1b_returns_allowances": null,
+      "line_1c_balance": 374221,
+      "line_2_cost_of_goods_sold": 121283,
+      "line_3_gross_profit": 252938,
+      "line_4_net_gain_loss_form_4797": null,
+      "line_5_other_income_loss": null,
+      "line_6_total_income": 252938
+    },
+    "deductions": {
+      "line_7_compensation_of_officers": 20000,
+      "line_8_salaries_wages": 56376,
+      "line_9_repairs_maintenance": 220,
+      "line_10_bad_debts": null,
+      "line_11_rents": 23148,
+      "line_12_taxes_licenses": 15822,
+      "line_13_interest": null,
+      "line_14_depreciation": 973,
+      "line_15_depletion": null,
+      "line_16_advertising": 947,
+      "line_17_pension_profit_sharing": null,
+      "line_18_employee_benefit_programs": null,
+      "line_19_other_deductions": 29191,
+      "line_20_total_deductions": 146677
+    },
+    "tax_payments": {
+      "line_21_ordinary_business_income": 106261,
+      "line_22a_excess_net_passive_income_tax": null,
+      "line_22b_lifo_recapture_tax": null,
+      "line_22c_total_tax": null,
+      "line_23a_estimated_tax_payments": null,
+      "line_23b_tax_deposited_form_7004": null,
+      "line_23c_credit_for_federal_tax_paid": null,
+      "line_24_total_payments": null,
+      "line_25_estimated_tax_penalty": null,
+      "line_26_amount_owed": null,
+      "line_27_overpayment": null
+    },
+    "schedule_b": {
+      "accounting_method": "accrual",
+      "business_activity": "CONSTRUCTION",
+      "product_or_service": "RESIDENTIAL",
+      "shareholder_owned_disregarded_entity": false,
+      "owns_20_pct_or_more": false,
+      "owns_interest_in_partnership": false,
+      "outstanding_stock_restricted": false,
+      "outstanding_stock_options": false,
+      "material_advisor_disclosure": false,
+      "aggregated_activities": false,
+      "election_section_163j": false,
+      "tax_shelter_registration": false,
+      "receipts_less_than_250k": false,
+      "assets_less_than_250k": false
+    },
+    "schedule_k": {
+      "line_1_ordinary_business_income": 106261,
+      "line_2_net_rental_real_estate": null,
+      "line_3_other_net_rental_income": null,
+      "line_4_interest_income": null,
+      "line_5a_ordinary_dividends": null,
+      "line_5b_qualified_dividends": null,
+      "line_6_royalties": null,
+      "line_7_net_short_term_capital_gain": null,
+      "line_8a_net_long_term_capital_gain": null,
+      "line_8b_collectibles_gain": null,
+      "line_8c_unrecaptured_section_1250_gain": null,
+      "line_9_net_section_1231_gain": null,
+      "line_10_other_income_loss": 27433,
+      "line_11_section_179_deduction": null,
+      "line_12a_charitable_contributions": null,
+      "line_12b_investment_interest_expense": null,
+      "line_12c_section_59e2_expenditures": null,
+      "line_12d_other_deductions": null,
+      "line_13a_low_income_housing_credit": null,
+      "line_13b_low_income_housing_credit_other": null,
+      "line_13c_qualified_rehabilitation_expenditures": null,
+      "line_13d_other_credits": null,
+      "line_14a_foreign_country": null,
+      "line_14b_gross_income_foreign": null,
+      "line_14c_foreign_gross_income_deductions": null,
+      "line_14d_total_foreign_taxes": null,
+      "line_15a_post_1986_depreciation": null,
+      "line_15b_adjusted_gain_loss": null,
+      "line_15c_depletion": null,
+      "line_15d_oil_gas_gross_income": null,
+      "line_15e_other_amt_items": null,
+      "line_16a_tax_exempt_interest": null,
+      "line_16b_other_tax_exempt_income": null,
+      "line_16c_nondeductible_expenses": "Statement #16c.",
+      "line_16d_distributions": 27433,
+      "line_16e_repayment_of_loans": null,
+      "line_17_investment_income": null,
+      "line_18_investment_expenses": null
+    },
+    "schedule_l": {
+      "cash": {
+        "beginning_of_year": 30291,
+        "end_of_year": 38082
+      },
+      "trade_notes_receivable": {
+        "beginning_of_year": 7056,
+        "end_of_year": 29713
+      },
+      "less_allowance_bad_debts": {
+        "beginning_of_year": 7056,
+        "end_of_year": 29713
+      },
+      "inventories": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "us_government_obligations": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "tax_exempt_securities": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "other_current_assets": {
+        "beginning_of_year": 0,
+        "end_of_year": 61371
+      },
+      "loans_to_shareholders": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "mortgage_loans": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "other_investments": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "buildings_depreciable_assets": {
+        "beginning_of_year": 5702,
+        "end_of_year": 5702
+      },
+      "less_accumulated_depreciation": {
+        "beginning_of_year": 5702,
+        "end_of_year": 5702
+      },
+      "depletable_assets": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "less_accumulated_depletion": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "land": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "intangible_assets": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "less_accumulated_amortization": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "other_assets": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "total_assets": {
+        "beginning_of_year": 37347,
+        "end_of_year": 129166
+      },
+      "accounts_payable": {
+        "beginning_of_year": 4852,
+        "end_of_year": 19412
+      },
+      "mortgages_notes_payable_lt1yr": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "other_current_liabilities": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "loans_from_shareholders": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "mortgages_notes_payable_gt1yr": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "other_liabilities": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "capital_stock": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "additional_paid_in_capital": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "retained_earnings": {
+        "beginning_of_year": 32495,
+        "end_of_year": 109754
+      },
+      "adjustments_to_shareholders_equity": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "less_cost_treasury_stock": {
+        "beginning_of_year": null,
+        "end_of_year": null
+      },
+      "total_liabilities_equity": {
+        "beginning_of_year": 37347,
+        "end_of_year": 129166
+      }
+    },
+    "schedule_m1": {
+      "line_1_net_income_per_books": 104692,
+      "line_2_income_on_schedule_k": null,
+      "line_3_expenses_on_books_not_on_k": 1569,
+      "line_3a_depreciation": null,
+      "line_3b_travel_entertainment": null,
+      "line_4_add_lines_1_through_3": 106261,
+      "line_5_income_on_books_not_on_k": null,
+      "line_5a_tax_exempt_interest": null,
+      "line_6_deductions_on_k_not_on_books": null,
+      "line_6a_depreciation": null,
+      "line_7_add_lines_5_and_6": null,
+      "line_8_income_loss": 106261
+    },
+    "schedule_m2": {
+      "accumulated_adjustments": {
+        "balance_beginning": 32495,
+        "ordinary_income": 106261,
+        "other_additions": null,
+        "loss_from_page1": null,
+        "other_reductions": -1569,
+        "combine_lines_1_through_5": 137187,
+        "distributions": 27433,
+        "balance_end_of_year": 109754
+      },
+      "other_adjustments": {
+        "balance_beginning": null,
+        "ordinary_income": null,
+        "other_additions": null,
+        "loss_from_page1": null,
+        "other_reductions": null,
+        "combine_lines_1_through_5": null,
+        "distributions": null,
+        "balance_end_of_year": null
+      },
+      "shareholders_undistributed_taxable_income": {
+        "balance_beginning": null,
+        "ordinary_income": null,
+        "other_additions": null,
+        "loss_from_page1": null,
+        "other_reductions": null,
+        "combine_lines_1_through_5": null,
+        "distributions": null,
+        "balance_end_of_year": null
+      },
+      "accumulated_earnings_profits": {
+        "balance_beginning": null,
+        "ordinary_income": null,
+        "other_additions": null,
+        "loss_from_page1": null,
+        "other_reductions": null,
+        "combine_lines_1_through_5": null,
+        "distributions": null,
+        "balance_end_of_year": null
+      }
+    }
+  },
+  "pages": [
+    {
+      "page_number": 1,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 736.87,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {
+        "form_type": {
+          "value": "1120-S",
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_year": {
+          "value": "2022",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.name": {
+          "value": "RAIN DROP SERVICES LLC",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.ein": {
+          "value": "84-4391731",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.ssn": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "taxpayer.address.street": {
+          "value": "855 TROSPER RD 108-215",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.address.city": {
+          "value": "TUMWATER",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.address.state": {
+          "value": "WA",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.address.zip_code": {
+          "value": "98512",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "taxpayer.address.country": {
+          "value": "US",
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "header.business_activity_code": {
+          "value": "236110",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "header.business_activity": {
+          "value": "CONSTRUCTION",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "header.product_or_service": {
+          "value": "RESIDENTIAL",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "header.date_incorporated": {
+          "value": "01-22-2020",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "header.date_s_election_effective": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "header.accounting_method": {
+          "value": "accrual",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "header.number_of_shareholders": {
+          "value": 1,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "header.total_assets": {
+          "value": 129166,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "income.line_1a_gross_receipts": {
+          "value": 374221,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "income.line_1b_returns_allowances": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "income.line_1c_balance": {
+          "value": 374221,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "income.line_2_cost_of_goods_sold": {
+          "value": 121283,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "income.line_3_gross_profit": {
+          "value": 252938,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "income.line_4_net_gain_loss_form_4797": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "income.line_5_other_income_loss": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "income.line_6_total_income": {
+          "value": 252938,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_7_compensation_of_officers": {
+          "value": 20000,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_8_salaries_wages": {
+          "value": 56376,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_9_repairs_maintenance": {
+          "value": 220,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_10_bad_debts": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "deductions.line_11_rents": {
+          "value": 23148,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_12_taxes_licenses": {
+          "value": 15822,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_13_interest": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "deductions.line_14_depreciation": {
+          "value": 973,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_15_depletion": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "deductions.line_16_advertising": {
+          "value": 947,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_17_pension_profit_sharing": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "deductions.line_18_employee_benefit_programs": {
+          "value": null,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_19_other_deductions": {
+          "value": 29191,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "deductions.line_20_total_deductions": {
+          "value": 146677,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "tax_payments.line_21_ordinary_business_income": {
+          "value": 106261,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "tax_payments.line_22a_excess_net_passive_income_tax": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_22b_lifo_recapture_tax": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_22c_total_tax": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_23a_estimated_tax_payments": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_23b_tax_deposited_form_7004": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_23c_credit_for_federal_tax_paid": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_24_total_payments": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_25_estimated_tax_penalty": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_26_amount_owed": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "tax_payments.line_27_overpayment": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_b.accounting_method": {
+          "value": "accrual",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.business_activity": {
+          "value": "CONSTRUCTION",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.product_or_service": {
+          "value": "RESIDENTIAL",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.shareholder_owned_disregarded_entity": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.owns_20_pct_or_more": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.owns_interest_in_partnership": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.outstanding_stock_restricted": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.outstanding_stock_options": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.material_advisor_disclosure": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.aggregated_activities": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.election_section_163j": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.tax_shelter_registration": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.receipts_less_than_250k": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_b.assets_less_than_250k": {
+          "value": false,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_k.line_1_ordinary_business_income": {
+          "value": 106261,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_k.line_2_net_rental_real_estate": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_3_other_net_rental_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_4_interest_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_5a_ordinary_dividends": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_5b_qualified_dividends": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_6_royalties": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_7_net_short_term_capital_gain": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_8a_net_long_term_capital_gain": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_8b_collectibles_gain": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_8c_unrecaptured_section_1250_gain": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_9_net_section_1231_gain": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_10_other_income_loss": {
+          "value": 27433,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_k.line_11_section_179_deduction": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_12a_charitable_contributions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_12b_investment_interest_expense": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_12c_section_59e2_expenditures": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_12d_other_deductions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_13a_low_income_housing_credit": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_13b_low_income_housing_credit_other": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_13c_qualified_rehabilitation_expenditures": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_13d_other_credits": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_14a_foreign_country": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_14b_gross_income_foreign": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_14c_foreign_gross_income_deductions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_14d_total_foreign_taxes": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_15a_post_1986_depreciation": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_15b_adjusted_gain_loss": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_15c_depletion": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_15d_oil_gas_gross_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_15e_other_amt_items": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_16a_tax_exempt_interest": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_16b_other_tax_exempt_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_16c_nondeductible_expenses": {
+          "value": "Statement #16c.",
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_k.line_16d_distributions": {
+          "value": 27433,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_k.line_16e_repayment_of_loans": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_17_investment_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_k.line_18_investment_expenses": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.cash.beginning_of_year": {
+          "value": 30291,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.cash.end_of_year": {
+          "value": 38082,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.trade_notes_receivable.beginning_of_year": {
+          "value": 7056,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.trade_notes_receivable.end_of_year": {
+          "value": 29713,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.less_allowance_bad_debts.beginning_of_year": {
+          "value": 7056,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.less_allowance_bad_debts.end_of_year": {
+          "value": 29713,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.inventories.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.inventories.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.us_government_obligations.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.us_government_obligations.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.tax_exempt_securities.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.tax_exempt_securities.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_current_assets.beginning_of_year": {
+          "value": 0,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.other_current_assets.end_of_year": {
+          "value": 61371,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.loans_to_shareholders.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.loans_to_shareholders.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.mortgage_loans.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.mortgage_loans.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_investments.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_investments.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.buildings_depreciable_assets.beginning_of_year": {
+          "value": 5702,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.buildings_depreciable_assets.end_of_year": {
+          "value": 5702,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.less_accumulated_depreciation.beginning_of_year": {
+          "value": 5702,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.less_accumulated_depreciation.end_of_year": {
+          "value": 5702,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.depletable_assets.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.depletable_assets.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.less_accumulated_depletion.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.less_accumulated_depletion.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.land.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.land.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.intangible_assets.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.intangible_assets.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.less_accumulated_amortization.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.less_accumulated_amortization.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_assets.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_assets.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.total_assets.beginning_of_year": {
+          "value": 37347,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.total_assets.end_of_year": {
+          "value": 129166,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.accounts_payable.beginning_of_year": {
+          "value": 4852,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.accounts_payable.end_of_year": {
+          "value": 19412,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.mortgages_notes_payable_lt1yr.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.mortgages_notes_payable_lt1yr.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_current_liabilities.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_current_liabilities.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.loans_from_shareholders.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.loans_from_shareholders.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.mortgages_notes_payable_gt1yr.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.mortgages_notes_payable_gt1yr.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_liabilities.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.other_liabilities.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.capital_stock.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.capital_stock.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.additional_paid_in_capital.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.additional_paid_in_capital.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.retained_earnings.beginning_of_year": {
+          "value": 32495,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.retained_earnings.end_of_year": {
+          "value": 109754,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.adjustments_to_shareholders_equity.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.adjustments_to_shareholders_equity.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.less_cost_treasury_stock.beginning_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.less_cost_treasury_stock.end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_l.total_liabilities_equity.beginning_of_year": {
+          "value": 37347,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_l.total_liabilities_equity.end_of_year": {
+          "value": 129166,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m1.line_1_net_income_per_books": {
+          "value": 104692,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m1.line_2_income_on_schedule_k": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_3_expenses_on_books_not_on_k": {
+          "value": 1569,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m1.line_3a_depreciation": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_3b_travel_entertainment": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_4_add_lines_1_through_3": {
+          "value": 106261,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m1.line_5_income_on_books_not_on_k": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_5a_tax_exempt_interest": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_6_deductions_on_k_not_on_books": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_6a_depreciation": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_7_add_lines_5_and_6": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m1.line_8_income_loss": {
+          "value": 106261,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.accumulated_adjustments.balance_beginning": {
+          "value": 32495,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.accumulated_adjustments.ordinary_income": {
+          "value": 106261,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.accumulated_adjustments.other_additions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_adjustments.loss_from_page1": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_adjustments.other_reductions": {
+          "value": -1569,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.accumulated_adjustments.combine_lines_1_through_5": {
+          "value": 137187,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.accumulated_adjustments.distributions": {
+          "value": 27433,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.accumulated_adjustments.balance_end_of_year": {
+          "value": 109754,
+          "confidence": 1.0,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": false,
+          "review_reason": null
+        },
+        "schedule_m2.other_adjustments.balance_beginning": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.ordinary_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.other_additions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.loss_from_page1": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.other_reductions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.combine_lines_1_through_5": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.distributions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.other_adjustments.balance_end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.balance_beginning": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.ordinary_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.other_additions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.loss_from_page1": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.other_reductions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.combine_lines_1_through_5": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.distributions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.shareholders_undistributed_taxable_income.balance_end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.balance_beginning": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.ordinary_income": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.other_additions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.loss_from_page1": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.other_reductions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.combine_lines_1_through_5": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.distributions": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        },
+        "schedule_m2.accumulated_earnings_profits.balance_end_of_year": {
+          "value": null,
+          "confidence": 0.8,
+          "source": "llm",
+          "bounding_box": null,
+          "needs_review": true,
+          "review_reason": "Low confidence (0.80)"
+        }
+      },
+      "raw_text": null
+    },
+    {
+      "page_number": 2,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 738.84,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 3,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 1186.66,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 4,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 1104.85,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 5,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 941.71,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 6,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 755.68,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 7,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 534.1,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 8,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 851.81,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 9,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 742.7,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 10,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 460.1,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "acceptable"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 11,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 700.26,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 12,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 388,
+        "blur_score": 1310.84,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 13,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 909.28,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 14,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 785.35,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 15,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 653.16,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 16,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 825.8,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 17,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 598.65,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 18,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 1569.59,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 19,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 402.91,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "acceptable"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 20,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 388.08,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "acceptable"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 21,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 388,
+        "blur_score": 1203.1,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 22,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 388,
+        "blur_score": 842.96,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 23,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 1048.3,
+        "is_skewed": false,
+        "has_watermark": false,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 24,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 919.17,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    },
+    {
+      "page_number": 25,
+      "form_type": "1120-S",
+      "quality": {
+        "dpi": 300,
+        "blur_score": 1015.68,
+        "is_skewed": false,
+        "has_watermark": true,
+        "overall_quality": "good"
+      },
+      "fields": {},
+      "raw_text": null
+    }
+  ],
+  "review_flags": [
+    {
+      "field_name": "form_type",
+      "page": null,
+      "severity": "warning",
+      "message": "LLM confidence 0.80 below threshold 0.85",
+      "auto_resolved": false
+    },
+    {
+      "field_name": "taxpayer.address.country",
+      "page": null,
+      "severity": "warning",
+      "message": "LLM confidence 0.80 below threshold 0.85",
+      "auto_resolved": false
+    }
+  ],
+  "needs_human_review": false,
+  "overall_confidence": 0.995,
+  "processing_time_seconds": 86.7
+}
