@@ -31,3 +31,4 @@ venv/
 .venv/
 env/
 tax_returns_business/
+*.json
