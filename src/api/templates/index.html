@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Form Parser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg: #0F172A;
+            --surface: rgba(30, 41, 59, 0.7);
+            --surface-hover: rgba(30, 41, 59, 0.9);
+            --text: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #A5B4FC, #C084FC);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .file-drop-area {
+            border: 2px dashed var(--border);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+
+        .file-drop-area:hover, .file-drop-area.dragover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .file-drop-area input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            appearance: none;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), #8B5CF6);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: inherit;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+            filter: brightness(1.1);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-container h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34D399;
+            font-weight: 500;
+            display: none;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow: auto;
+            flex-grow: 1;
+            margin: 0;
+            border: 1px solid var(--border);
+            color: #A5B4FC;
+            font-size: 0.9rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.5;
+            min-height: 400px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #file-name {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #A5B4FC;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>Tax Parser UI</h1>
+        <p class="subtitle">Extract data from scanned tax form PDFs</p>
+
+        <form id="upload-form">
+            <div class="input-group">
+                <label>Upload PDF Document</label>
+                <div class="file-drop-area" id="drop-area">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
+                    <div>Drag & drop your PDF here</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">or click to browse</div>
+                    <input type="file" id="file-input" name="file" accept="application/pdf" required>
+                    <span id="file-name"></span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="form_type">Form Type / Hint (Optional)</label>
+                <select id="form_type" name="form_type">
+                    <option value="">Auto-detect via AI</option>
+                    <option value="1120-S">1120-S (U.S. Income Tax Return for an S Corp)</option>
+                    <option value="1065">1065 (U.S. Return of Partnership Income)</option>
+                    <option value="1120">1120 (U.S. Corporation Income Tax Return)</option>
+                    <option value="W-2">W-2 (Wage and Tax Statement)</option>
+                    <option value="1040">1040 (U.S. Individual Income Tax Return)</option>
+                    <option value="Schedule K-1 (Partnership)">Schedule K-1 (Partnership 1065)</option>
+                    <option value="Schedule K-1 (S-Corp)">Schedule K-1 (S-Corp 1120-S)</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submit-btn">Extract Data</button>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span>Processing document... This may take a minute.</span>
+            </div>
+        </form>
+    </div>
+
+    <div class="card result-container">
+        <h2>
+            Output JSON 
+            <span class="badge" id="success-badge">Extracted Successfully</span>
+        </h2>
+        <pre id="result-output">
+<div class="empty-state">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+</svg>
+<div>Awaiting submission...</div>
+</div>
+        </pre>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('upload-form');
+    const fileInput = document.getElementById('file-input');
+    const dropArea = document.getElementById('drop-area');
+    const fileNameDisplay = document.getElementById('file-name');
+    const submitBtn = document.getElementById('submit-btn');
+    const loading = document.getElementById('loading');
+    const resultOutput = document.getElementById('result-output');
+    const successBadge = document.getElementById('success-badge');
+
+    // Handle drag and drop styling
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false);
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+            fileInput.files = files;
+            updateFileName();
+        }
+    });
+
+    fileInput.addEventListener('change', updateFileName);
+
+    function updateFileName() {
+        if (fileInput.files && fileInput.files.length > 0) {
+            fileNameDisplay.textContent = 'Selected: ' + fileInput.files[0].name;
+            fileNameDisplay.style.color = '#34D399';
+        } else {
+            fileNameDisplay.textContent = '';
+        }
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('Please select a PDF file first.');
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        // Update UI state
+        submitBtn.style.display = 'none';
+        loading.style.display = 'flex';
+        resultOutput.innerHTML = '<div style="color:var(--text-muted); display:flex; height:100%; align-items:center; justify-content:center;">Analyzing document semantics...</div>';
+        successBadge.style.display = 'none';
+
+        try {
+            const response = await fetch('/api/parse', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to process document');
+            }
+
+            const data = await response.json();
+            
+            // Format JSON with 2 spaces indentation
+            resultOutput.textContent = JSON.stringify(data, null, 2);
+            successBadge.style.display = 'inline-block';
+            
+        } catch (error) {
+            console.error('Error:', error);
+            resultOutput.innerHTML = `<div style="color: #EF4444;"><strong>Error:</strong><br>${error.message}</div>`;
+        } finally {
+            submitBtn.style.display = 'block';
+            loading.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
