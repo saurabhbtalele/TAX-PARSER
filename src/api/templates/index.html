@@ -254,6 +254,55 @@
             color: #A5B4FC;
             word-break: break-all;
         }
+
+        .dashboard {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #A5B4FC;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .flags-list {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .flags-list h3 {
+            color: #F87171;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        .flags-list ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #FECACA;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -299,9 +348,34 @@
 
     <div class="card result-container">
         <h2>
-            Output JSON 
+            Analytics & Output 
             <span class="badge" id="success-badge">Extracted Successfully</span>
         </h2>
+        
+        <div id="dashboard" class="dashboard">
+            <div class="stat-card">
+                <div class="value" id="stat-form-type">-</div>
+                <div class="label">Form Type</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="stat-confidence">-</div>
+                <div class="label">Confidence</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="stat-taxpayer">-</div>
+                <div class="label">Taxpayer</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="stat-status">-</div>
+                <div class="label">Status</div>
+            </div>
+        </div>
+        
+        <div id="flags-container" class="flags-list">
+            <h3>⚠️ Review Flags</h3>
+            <ul id="flags-list"></ul>
+        </div>
+        
         <pre id="result-output">
 <div class="empty-state">
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -376,6 +450,8 @@
         loading.style.display = 'flex';
         resultOutput.innerHTML = '<div style="color:var(--text-muted); display:flex; height:100%; align-items:center; justify-content:center;">Analyzing document semantics...</div>';
         successBadge.style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('flags-container').style.display = 'none';
 
         try {
             const response = await fetch('/api/parse', {
@@ -390,6 +466,49 @@
 
             const data = await response.json();
             
+            // Populate Dashboard
+            const dashboard = document.getElementById('dashboard');
+            const flagsContainer = document.getElementById('flags-container');
+            const statFormType = document.getElementById('stat-form-type');
+            const statConfidence = document.getElementById('stat-confidence');
+            const statTaxpayer = document.getElementById('stat-taxpayer');
+            const statStatus = document.getElementById('stat-status');
+            const flagsList = document.getElementById('flags-list');
+            
+            dashboard.style.display = 'grid';
+            
+            // Extract values safely
+            const formType = data.form_type || 'Unknown';
+            const overallConfidence = data.overall_confidence !== undefined ? Math.round(data.overall_confidence * 100) + '%' : 'N/A';
+            const taxpayer = data.structured_data?.taxpayer?.name || 'N/A';
+            const needsReview = data.needs_human_review;
+            
+            statFormType.textContent = formType;
+            statConfidence.textContent = overallConfidence;
+            statTaxpayer.textContent = taxpayer;
+            statTaxpayer.title = taxpayer; // Tooltip for long names
+            
+            if (needsReview) {
+                statStatus.textContent = 'Needs Review';
+                statStatus.style.color = '#F87171';
+            } else {
+                statStatus.textContent = 'Auto-Approved';
+                statStatus.style.color = '#34D399';
+            }
+
+            // Flags handling
+            if (data.review_flags && data.review_flags.length > 0) {
+                flagsContainer.style.display = 'block';
+                flagsList.innerHTML = '';
+                data.review_flags.forEach(flag => {
+                    const li = document.createElement('li');
+                    li.textContent = `[${flag.severity ? flag.severity.toUpperCase() : 'WARN'}] ${flag.field_name || 'Doc'}: ${flag.message}`;
+                    flagsList.appendChild(li);
+                });
+            } else {
+                flagsContainer.style.display = 'none';
+            }
+
             // Format JSON with 2 spaces indentation
             resultOutput.textContent = JSON.stringify(data, null, 2);
             successBadge.style.display = 'inline-block';
