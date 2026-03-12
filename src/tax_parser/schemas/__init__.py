@@ -10,7 +10,8 @@ from tax_parser.schemas.form_1040 import Form1040
 from tax_parser.schemas.form_1065 import Form1065
 from tax_parser.schemas.form_1120 import Form1120
 from tax_parser.schemas.form_1120s import Form1120S
-from tax_parser.schemas.schedule_k1 import ScheduleK1Partnership, ScheduleK1SCorp
+from tax_parser.schemas.schedule_k1_1065 import ScheduleK1Partnership
+from tax_parser.schemas.schedule_k1_1120s import ScheduleK1SCorp
 
 # Registry: FormType enum → schema class
 SCHEMA_REGISTRY: dict[FormType, Type[BaseTaxForm]] = {
