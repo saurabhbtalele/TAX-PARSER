@@ -303,6 +303,71 @@
             color: #FECACA;
             font-size: 0.9rem;
         }
+
+        /* Tabs Styles */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.25rem;
+            border-radius: 0.75rem;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-btn.active {
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .tab-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            width: auto;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
     </style>
 </head>
 <body>
@@ -327,11 +392,11 @@
             <div class="input-group">
                 <label for="form_type">Form Type / Hint (Optional)</label>
                 <select id="form_type" name="form_type">
-                    <option value="">Auto-detect via AI</option>
+                    <!-- <option value="">Auto-detect via AI</option> -->
                     <option value="1120-S">1120-S (U.S. Income Tax Return for an S Corp)</option>
                     <option value="1065">1065 (U.S. Return of Partnership Income)</option>
-                    <option value="1120">1120 (U.S. Corporation Income Tax Return)</option>
-                    <option value="W-2">W-2 (Wage and Tax Statement)</option>
+                    <!-- <option value="1120">1120 (U.S. Corporation Income Tax Return)</option> -->
+                    <!-- <option value="W-2">W-2 (Wage and Tax Statement)</option> -->
                     <option value="1040">1040 (U.S. Individual Income Tax Return)</option>
                     <option value="Schedule K-1 (Partnership)">Schedule K-1 (Partnership 1065)</option>
                     <option value="Schedule K-1 (S-Corp)">Schedule K-1 (S-Corp 1120-S)</option>
@@ -376,13 +441,24 @@
             <ul id="flags-list"></ul>
         </div>
         
+        <div class="tab-header">
+            <div class="tabs" id="json-tabs">
+                <button class="tab-btn active" data-tab="full">Full JSON</button>
+                <button class="tab-btn" data-tab="reduced">Reduced JSON</button>
+            </div>
+            <button id="copy-btn" class="copy-btn" title="Copy to clipboard">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+            </button>
+        </div>
+
         <pre id="result-output">
-<div class="empty-state">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-</svg>
-<div>Awaiting submission...</div>
-</div>
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <div>Awaiting submission...</div>
+            </div>
         </pre>
     </div>
 </div>
@@ -396,6 +472,60 @@
     const loading = document.getElementById('loading');
     const resultOutput = document.getElementById('result-output');
     const successBadge = document.getElementById('success-badge');
+    const copyBtn = document.getElementById('copy-btn');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    let currentData = null;
+    let currentTab = 'full';
+
+    // Recursive function to filter out null or empty string values
+    function getReducedJson(obj) {
+        if (Array.isArray(obj)) {
+            return obj
+                .map(v => getReducedJson(v))
+                .filter(v => v !== null && v !== "" && (typeof v !== 'object' || Object.keys(v).length > 0));
+        } else if (obj !== null && typeof obj === 'object') {
+            return Object.entries(obj).reduce((acc, [k, v]) => {
+                const filtered = getReducedJson(v);
+                if (filtered !== null && filtered !== "" && (typeof filtered !== 'object' || Object.keys(filtered).length > 0)) {
+                    acc[k] = filtered;
+                }
+                return acc;
+            }, {});
+        }
+        return obj;
+    }
+
+    function updateResultDisplay() {
+        if (!currentData) return;
+        
+        if (currentTab === 'full') {
+            resultOutput.textContent = JSON.stringify(currentData, null, 2);
+        } else {
+            const reducedData = getReducedJson(currentData);
+            resultOutput.textContent = JSON.stringify(reducedData, null, 2);
+        }
+    }
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = btn.dataset.tab;
+            updateResultDisplay();
+        });
+    });
+
+    copyBtn.addEventListener('click', () => {
+        const text = resultOutput.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Check!</span> Copied';
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        });
+    });
 
     // Handle drag and drop styling
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -465,6 +595,7 @@
             }
 
             const data = await response.json();
+            currentData = data; // Store for tab switching
             
             // Populate Dashboard
             const dashboard = document.getElementById('dashboard');
@@ -509,8 +640,8 @@
                 flagsContainer.style.display = 'none';
             }
 
-            // Format JSON with 2 spaces indentation
-            resultOutput.textContent = JSON.stringify(data, null, 2);
+            // Update display
+            updateResultDisplay();
             successBadge.style.display = 'inline-block';
             
         } catch (error) {
