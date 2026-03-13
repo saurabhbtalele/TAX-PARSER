@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
+import time
+from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
 from openai import AzureOpenAI
@@ -51,6 +53,7 @@ class LLMExtractor(BaseExtractor):
         form_type: FormType,
         page_images: list[Image.Image],
         pdf_bytes: bytes | None = None,
+        debug_dir: Path | None = None,
     ) -> ExtractionResult:
         """Send page images to GPT-4o and parse the structured JSON response."""
 
@@ -77,6 +80,36 @@ class LLMExtractor(BaseExtractor):
                 }
             )
 
+        # Save debug artifacts: prompt text, redacted request, and images sent to GPT
+        if debug_dir:
+            llm_debug = debug_dir / "3_llm_request"
+            llm_debug.mkdir(parents=True, exist_ok=True)
+
+            (llm_debug / "prompt.txt").write_text(prompt, encoding="utf-8")
+
+            redacted_content = []
+            for item in content:
+                if item.get("type") == "image_url":
+                    redacted_content.append({
+                        "type": "image_url",
+                        "image_url": {"detail": item["image_url"]["detail"], "url": "<base64 omitted>"},
+                    })
+                else:
+                    redacted_content.append(item)
+            (llm_debug / "request_payload.json").write_text(
+                json.dumps({"model": self._deployment, "content": redacted_content}, indent=2),
+                encoding="utf-8",
+            )
+
+            for i, img in enumerate(pages_to_send, start=1):
+                img.save(llm_debug / f"page_sent_{i:03d}.png")
+
+            logger.info(
+                "Saved LLM debug artifacts → %s  (prompt.txt, request_payload.json, %d image(s))",
+                llm_debug,
+                len(pages_to_send),
+            )
+
         logger.info(
             "Calling GPT-4o for %s extraction (%d pages)",
             form_type.value,
@@ -92,6 +125,11 @@ class LLMExtractor(BaseExtractor):
 
         raw_response = response.choices[0].message.content or "{}"
         raw_response = raw_response.strip()
+
+        if debug_dir:
+            llm_debug = debug_dir / "3_llm_request"
+            (llm_debug / "response_raw.txt").write_text(raw_response, encoding="utf-8")
+            logger.info("Saved raw GPT response → %s", llm_debug / "response_raw.txt")
 
         # Strip markdown fences if present
         if raw_response.startswith("```"):

@@ -32,6 +32,10 @@ class Settings(BaseSettings):
         description="Maximum pages sent in a single LLM call",
     )
     log_level: str = Field(default="INFO")
+    debug_artifacts_dir: str | None = Field(
+        default=None,
+        description="If set, intermediate images and prompts are saved here for debugging",
+    )
 
 
 def get_settings() -> Settings:

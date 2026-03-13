@@ -40,6 +40,11 @@ class TaxParserEngine:
 
     def __init__(self, settings: Settings | None = None) -> None:
         self._settings = settings or get_settings()
+        self._debug_root = (
+            Path(self._settings.debug_artifacts_dir).resolve()
+            if self._settings.debug_artifacts_dir
+            else None
+        )
 
         self._classifier = FormClassifier(self._settings)
         self._azure_extractor = AzureDIExtractor(self._settings)
@@ -75,9 +80,24 @@ class TaxParserEngine:
         logger.info("Processing: %s", pdf_path.name)
         logger.info("=" * 60)
 
+        # Prepare per-run debug folder
+        debug_dir: Path | None = None
+        if self._debug_root:
+            run_id = f"{pdf_path.stem}_{int(start_time)}"
+            debug_dir = self._debug_root / run_id
+            (debug_dir / "1_raw_images").mkdir(parents=True, exist_ok=True)
+            (debug_dir / "2_processed_images").mkdir(parents=True, exist_ok=True)
+            logger.info("Debug artifacts will be saved to: %s", debug_dir)
+
         # 1. Convert PDF to images
         raw_images = pdf_to_images(pdf_path, dpi=self._settings.image_dpi)
         total_pages = len(raw_images)
+
+        if debug_dir:
+            for i, img in enumerate(raw_images, start=1):
+                out = debug_dir / "1_raw_images" / f"page_{i:03d}.png"
+                img.save(out)
+            logger.info("Saved %d raw page image(s) → %s", total_pages, debug_dir / "1_raw_images")
 
         # 2. Preprocess each page
         if skip_preprocessing:
@@ -91,6 +111,13 @@ class TaxParserEngine:
                 processed, quality = preprocess_page(img)
                 processed_images.append(processed)
                 quality_metrics.append(quality)
+
+                if debug_dir:
+                    out = debug_dir / "2_processed_images" / f"page_{i + 1:03d}.png"
+                    processed.save(out)
+
+            if debug_dir:
+                logger.info("Saved %d processed page image(s) → %s", total_pages, debug_dir / "2_processed_images")
 
         # 3. Classify form type
         if form_type_hint and skip_classification:
@@ -112,7 +139,7 @@ class TaxParserEngine:
 
         # 4. Route to appropriate extractor
         pdf_bytes = pdf_path.read_bytes()
-        result = self._route_extraction(form_type, processed_images, pdf_bytes)
+        result = self._route_extraction(form_type, processed_images, pdf_bytes, debug_dir=debug_dir)
 
         # 5. Populate metadata
         result.source_file = str(pdf_path)
@@ -187,6 +214,7 @@ class TaxParserEngine:
         form_type: FormType,
         page_images: list[Image.Image],
         pdf_bytes: bytes,
+        debug_dir: Path | None = None,
     ) -> ExtractionResult:
         """Route to the correct extractor based on form type."""
 
@@ -196,7 +224,7 @@ class TaxParserEngine:
 
         elif form_type in LLM_EXTRACTION_FORMS:
             logger.info("Routing to LLM (GPT-4o) extractor")
-            return self._llm_extractor.extract(form_type, page_images)
+            return self._llm_extractor.extract(form_type, page_images, debug_dir=debug_dir)
 
         else:
             # Unknown form – attempt LLM extraction as a best-effort fallback
@@ -204,7 +232,7 @@ class TaxParserEngine:
                 "Form type %s has no dedicated extractor, attempting LLM fallback",
                 form_type.value,
             )
-            return self._llm_extractor.extract(form_type, page_images)
+            return self._llm_extractor.extract(form_type, page_images, debug_dir=debug_dir)
 
     def _should_flag_for_review(self, result: ExtractionResult) -> bool:
         """Determine if the document needs human review."""
