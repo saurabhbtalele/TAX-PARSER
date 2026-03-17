@@ -96,10 +96,9 @@ def remove_watermark(img: Image.Image, method: str = "color") -> Image.Image:
     hsv = cv2.cvtColor(cv_img, cv2.COLOR_BGR2HSV)
 
     if method == "color":
-        # Target grayish watermark text (low saturation, mid-range value)
-        # These ranges cover typical "Client Copy" gray watermarks
-        lower_gray = np.array([0, 0, 140])
-        upper_gray = np.array([180, 50, 220])
+        # Target grayish watermark text (slightly tighter range)
+        lower_gray = np.array([0, 0, 150])
+        upper_gray = np.array([180, 40, 210])
         mask_gray = cv2.inRange(hsv, lower_gray, upper_gray)
 
         # Target reddish watermark tones
@@ -142,8 +141,8 @@ def enhance_image(img: Image.Image) -> Image.Image:
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     enhanced_gray = clahe.apply(gray)
 
-    # Light denoising
-    enhanced_gray = cv2.fastNlMeansDenoising(enhanced_gray, h=10)
+    # Light denoising (reduced h from 10 to 4 to preserve text sharpness)
+    enhanced_gray = cv2.fastNlMeansDenoising(enhanced_gray, h=4)
 
     # Convert back to 3-channel for consistency
     enhanced_bgr = cv2.cvtColor(enhanced_gray, cv2.COLOR_GRAY2BGR)

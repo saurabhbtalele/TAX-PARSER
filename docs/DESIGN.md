@@ -15,28 +15,24 @@ The engine is designed as a library-first package — it can be invoked programm
 
 ## 2. Scope
 
-### In Scope (Current)
-
 | Capability | Details |
 |---|---|
-| **PDF ingestion** | Multi-page scanned PDFs converted to images at configurable DPI (default 300). |
-| **Image preprocessing** | Deskew (Hough line detection), watermark removal (HSV color masking), CLAHE contrast enhancement, denoising, and per-page quality assessment. |
-| **Form classification** | GPT-4o Vision classifies each page into one of 16 supported form types via a confidence-weighted majority vote. |
-| **Data extraction — Azure DI** | Prebuilt tax models for W-2, 1099-NEC, 1099-R, 1099-MISC, 1040, and Schedules B/C/D/E/F. |
-| **Data extraction — LLM** | GPT-4o Vision with form-specific prompts and full JSON schemas for 1120-S, 1120, 1065, Schedule K-1 (Partnership), and Schedule K-1 (S-Corp). |
-| **Structured output** | Every form maps to a Pydantic schema; extraction results include per-field confidence scores and bounding boxes. |
-| **Cross-field validation** | Arithmetic checks (e.g., Line 1c = 1a − 1b), EIN format validation, required-field checks, and balance sheet reconciliation. |
-| **Human review flagging** | Documents are auto-flagged when confidence is low, validation errors exist, page quality is poor, or warning count exceeds a threshold. |
-| **Batch processing** | Sequential processing of multiple PDFs with per-document error isolation. |
+| **PDF ingestion** | Multi-page scanned PDFs converted to images at configurable DPI (default 450). |
+| **Image preprocessing** | Deskew, watermark removal, CLAHE enhancement, and per-page quality assessment. |
+| **Form classification** | GPT-4o Vision identifies form types with confidence-weighted voting. |
+| **Model Comparison** | Side-by-side performance evaluation (Confidence, Cost, Time, Quality) across multiple AI models. |
+| **Data extraction** | Dual-strategy: Azure DI prebuilt models for standard forms, GPT-4o Vision for complex business forms. |
+| **Modular Extractor Factory** | Plugin-based architecture for easily adding new models (Gemini, Mistral, etc.). |
+| **FastAPI Service** | REST API layer for document processing and model orchestration. |
+| **Interactive Dashboard** | Modern Web UI with file uploads, analytics charts, and model comparison tables. |
+| **Human review flagging** | Intelligent flagging based on confidence, validation errors, and page quality. |
 
 ### Out of Scope (Future)
 
-- REST/gRPC API layer and web UI.
 - Asynchronous / parallel batch processing (Celery, etc.).
-- Database persistence of extraction results.
+- Database persistence of extraction results (current results are volatile/JSON-based).
 - Multi-tenant access control and audit logging.
 - Support for non-US tax forms.
-- OCR-only fallback when Azure services are unavailable.
 
 ---
 
@@ -77,28 +73,34 @@ The engine is designed as a library-first package — it can be invoked programm
 │     │  (W-2, 1099-*, 1040,  │  (1120-S, 1120, 1065,       │    │
 │     │   Schedules B-F)      │   Schedule K-1)              │    │
 │     │                       │                              │    │
-│     │  AzureDIExtractor     │  LLMExtractor                │    │
-│     │  prebuilt tax models  │  GPT-4o Vision (high detail) │    │
-│     └───────────────────────┴──────────────────────────────┘    │
-│     Unknown forms → LLM fallback                                │
-└────┬────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  5. TaxValidator.validate()                                     │
-│     EIN format, required fields, arithmetic checks,             │
-│     balance sheet reconciliation → list[ReviewFlag]             │
-└────┬────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  6. Review decision                                             │
-│     needs_human_review = f(error flags, confidence,             │
-│                            page quality, warning count)         │
-└────┬────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌──────────────────┐
+tax-parser/
+├── config/
+│   └── settings.py                   # Pydantic-settings configuration
+├── docs/
+│   ├── ARCHITECTURE_OVERVIEW.md      # High-level design rationale
+│   ├── AZURE_OPENAI_SETUP.md         # Azure deployment guide
+│   └── DESIGN.md                     # This document
+├── src/
+│   ├── api/                          # FastAPI REST layer
+│   │   ├── main.py                   # API entry point
+│   │   ├── routes/                   # Route handlers
+│   │   ├── templates/                # Web UI (HTML/JS)
+│   │   └── static/                   # CSS/Assets
+│   └── tax_parser/                   # Core engine
+│       ├── engine.py                 # Orchestration engine
+│       ├── classifier.py             # Page classification
+│       ├── preprocessor.py           # Image preprocessing
+│       ├── extractors/               # modular extractors
+│       │   ├── factory.py            # Extractor registry
+│       │   ├── azure_di_extractor.py # Azure DI
+│       │   └── llm_extractor.py      # GPT-4o
+│       ├── models/                   # Pydantic data models
+│       ├── schemas/                  # Tax form schemas
+│       └── validators/               # Arithmetic validation
+├── tests/                            # Automated test suite
+├── .env                              # Environment configuration
+└── run_server.bat                    # Server start script
+�──────────┐
 │ ExtractionResult  │
 │ (structured JSON) │
 └──────────────────┘
@@ -333,12 +335,26 @@ The top-level output returned by every extraction call.
 | `extraction_method` | `str` | `"azure_di"` or `"llm"` |
 | `structured_data` | `dict[str, Any]` | Complete parsed form data matching the Pydantic schema |
 | `pages` | `list[PageResult]` | Per-page extraction details |
+| `comparisons` | `list[ModelComparisonMetrics]` | Multi-model performance data |
 | `review_flags` | `list[ReviewFlag]` | Validation issues and low-confidence warnings |
 | `needs_human_review` | `bool` | Whether the document requires manual review |
 | `overall_confidence` | `float` | Mean confidence across all extracted fields (0.0–1.0) |
 | `processing_time_seconds` | `float` | Wall-clock processing time |
 
-### 5.2 PageResult
+### 5.2 ModelComparisonMetrics [NEW]
+
+| Field | Type | Description |
+|---|---|---|
+| `model_id` | `str` | Unique ID of the model (e.g., `gpt-4o`) |
+| `model_name` | `str` | Display name for the UI |
+| `confidence` | `float \| None` | Overall confidence score |
+| `cost` | `float \| None` | Estimated USD cost of the run |
+| `time` | `float \| None` | Processing time in seconds |
+| `quality_score` | `float \| None` | 0-100 quality score (completeness + confidence) |
+| `is_success` | `bool` | Whether the extraction succeeded |
+| `error_message` | `str \| None` | Error details if failed |
+
+### 5.3 PageResult
 
 | Field | Type | Description |
 |---|---|---|
@@ -538,3 +554,7 @@ pytest tests/ -v
 - **LLM confidence is self-reported** — GPT-4o's confidence estimates are heuristic, not calibrated probabilities. They should be treated as relative indicators, not absolute measures.
 - **poppler dependency** — The `pdf2image` library requires poppler to be installed at the system level, which adds a deployment prerequisite.
 - **Single-document classification** — If a PDF contains multiple distinct tax forms (e.g., a W-2 followed by a 1040), the engine classifies the entire document as a single form type via majority vote. Multi-form splitting is not yet implemented.
+
+## 13. AI Model Comparison Table
+
+The system provides a real-time comparison table...

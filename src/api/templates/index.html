@@ -368,6 +368,56 @@
             background: rgba(255, 255, 255, 0.1);
             color: var(--text);
         }
+
+        /* Comparison Table Styles */
+        .comparison-container {
+            display: none;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            text-align: left;
+            padding: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .comparison-table td {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+        .comparison-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .model-name {
+            font-weight: 600;
+            color: #A5B4FC;
+        }
+        .metric-value {
+            font-family: 'Consolas', monospace;
+        }
+        .best-performer {
+            color: #34D399;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -436,6 +486,22 @@
             </div>
         </div>
         
+        <div id="comparison-container" class="comparison-container">
+            <h3>📊 Model Comparison</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Confidence</th>
+                        <th>Est. Cost</th>
+                        <th>Time</th>
+                        <th>Quality</th>
+                    </tr>
+                </thead>
+                <tbody id="comparison-body"></tbody>
+            </table>
+        </div>
+
         <div id="flags-container" class="flags-list">
             <h3>⚠️ Review Flags</h3>
             <ul id="flags-list"></ul>
@@ -619,12 +685,50 @@
             statTaxpayer.textContent = taxpayer;
             statTaxpayer.title = taxpayer; // Tooltip for long names
             
-            if (needsReview) {
-                statStatus.textContent = 'Needs Review';
-                statStatus.style.color = '#F87171';
+            statStatus.style.color = needsReview ? '#F87171' : '#34D399';
+
+            // Model Comparison Handling
+            const comparisonContainer = document.getElementById('comparison-container');
+            const comparisonBody = document.getElementById('comparison-body');
+            
+            if (data.comparisons && data.comparisons.length > 0) {
+                comparisonContainer.style.display = 'block';
+                comparisonBody.innerHTML = '';
+                
+                // Find best performers for highlighting
+                const bests = {
+                    confidence: Math.max(...data.comparisons.map(c => c.confidence || 0)),
+                    cost: Math.min(...data.comparisons.map(c => c.cost || 999)),
+                    time: Math.min(...data.comparisons.map(c => c.time || 999)),
+                    quality: Math.max(...data.comparisons.map(c => c.quality_score || 0))
+                };
+
+                data.comparisons.forEach(comp => {
+                    const tr = document.createElement('tr');
+                    
+                    if (!comp.is_success) {
+                        tr.innerHTML = `
+                            <td class="model-name">${comp.model_name}</td>
+                            <td colspan="4" style="color: #F87171; font-size: 0.8rem;">Error: ${comp.error_message || 'Unknown error'}</td>
+                        `;
+                    } else {
+                        const isBestConf = comp.confidence === bests.confidence;
+                        const isBestCost = comp.cost === bests.cost;
+                        const isBestTime = comp.time === bests.time;
+                        const isBestQual = comp.quality_score === bests.quality;
+
+                        tr.innerHTML = `
+                            <td class="model-name">${comp.model_name}</td>
+                            <td class="metric-value ${isBestConf ? 'best-performer' : ''}">${Math.round((comp.confidence || 0) * 100)}%</td>
+                            <td class="metric-value ${isBestCost ? 'best-performer' : ''}">$${(comp.cost || 0).toFixed(4)}</td>
+                            <td class="metric-value ${isBestTime ? 'best-performer' : ''}">${(comp.time || 0).toFixed(2)}s</td>
+                            <td class="metric-value ${isBestQual ? 'best-performer' : ''}">${(comp.quality_score || 0).toFixed(1)}</td>
+                        `;
+                    }
+                    comparisonBody.appendChild(tr);
+                });
             } else {
-                statStatus.textContent = 'Auto-Approved';
-                statStatus.style.color = '#34D399';
+                comparisonContainer.style.display = 'none';
             }
 
             // Flags handling

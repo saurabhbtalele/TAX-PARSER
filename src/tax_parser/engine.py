@@ -14,11 +14,13 @@ from config.settings import Settings, get_settings
 from tax_parser.classifier import FormClassifier
 from tax_parser.extractors.azure_di_extractor import AzureDIExtractor
 from tax_parser.extractors.llm_extractor import LLMExtractor
+from tax_parser.extractors.factory import ExtractorFactory
 from tax_parser.models.result import (
     AZURE_DI_FORMS,
     LLM_EXTRACTION_FORMS,
     ExtractionResult,
     FormType,
+    ModelComparisonMetrics,
     ReviewFlag,
     ReviewSeverity,
 )
@@ -140,8 +142,14 @@ class TaxParserEngine:
         # 4. Route to appropriate extractor
         pdf_bytes = pdf_path.read_bytes()
         result = self._route_extraction(form_type, processed_images, pdf_bytes, debug_dir=debug_dir)
+        
+        # Capture primary extraction time for comparison
+        result.processing_time_seconds = round(time.time() - start_time, 2)
 
-        # 5. Populate metadata
+        # 5. Populate Comparisons
+        self._run_comparisons(result, form_type, processed_images, pdf_bytes, debug_dir=debug_dir)
+
+        # 6. Populate metadata
         result.source_file = str(pdf_path)
         result.total_pages = total_pages
         result.form_type = form_type
@@ -153,14 +161,14 @@ class TaxParserEngine:
             if i < len(page_classifications):
                 page_result.form_type = page_classifications[i][0]
 
-        # 6. Validate extracted data
+        # 7. Validate extracted data
         validation_flags = self._validator.validate(form_type, result.structured_data)
         result.review_flags.extend(validation_flags)
 
-        # 7. Determine if human review is needed
+        # 8. Determine if human review is needed
         result.needs_human_review = self._should_flag_for_review(result)
 
-        # 8. Timing
+        # 9. Timing
         result.processing_time_seconds = round(time.time() - start_time, 2)
 
         logger.info(
@@ -233,6 +241,114 @@ class TaxParserEngine:
                 form_type.value,
             )
             return self._llm_extractor.extract(form_type, page_images, debug_dir=debug_dir)
+
+    def _run_comparisons(
+        self,
+        primary_result: ExtractionResult,
+        form_type: FormType,
+        page_images: list[Image.Image],
+        pdf_bytes: bytes,
+        debug_dir: Path | None = None,
+    ) -> None:
+        """Run additional models for comparison and populate metrics."""
+        
+        # 1. Add primary model result as the first comparison
+        primary_metrics = ModelComparisonMetrics(
+            model_id=getattr(self._llm_extractor if primary_result.extraction_method == "llm" else self._azure_extractor, "model_id", "primary"),
+            model_name="Primary (" + primary_result.extraction_method.upper() + ")",
+            confidence=primary_result.overall_confidence,
+            time=primary_result.processing_time_seconds,
+            cost=self._estimate_cost(primary_result.extraction_method, len(page_images)),
+            quality_score=self._calculate_quality_score(primary_result),
+            is_success=True
+        )
+        primary_result.comparisons.append(primary_metrics)
+
+        # 2. Identify other comparison models
+        active_ids = self._settings.active_comparison_models
+        for model_id in active_ids:
+            # Skip if it's already the primary
+            if model_id == primary_metrics.model_id:
+                continue
+                
+            extractor = ExtractorFactory.get_extractor(model_id, self._settings)
+            if not extractor or not extractor.is_available(self._settings):
+                logger.info("Model %s not available for comparison (no key or not registered)", model_id)
+                continue
+
+            logger.info("Running comparison model: %s", model_id)
+            comp_start = time.time()
+            try:
+                comp_result = extractor.extract(form_type, page_images, pdf_bytes, debug_dir=debug_dir)
+                comp_time = round(time.time() - comp_start, 2)
+                
+                metrics = ModelComparisonMetrics(
+                    model_id=model_id,
+                    model_name=extractor.display_name,
+                    confidence=comp_result.overall_confidence,
+                    time=comp_time,
+                    cost=self._estimate_cost(model_id, len(page_images)),
+                    quality_score=self._calculate_quality_score(comp_result),
+                    is_success=True
+                )
+                primary_result.comparisons.append(metrics)
+            except Exception as e:
+                logger.error("Comparison model %s failed: %s", model_id, e)
+                primary_result.comparisons.append(ModelComparisonMetrics(
+                    model_id=model_id,
+                    model_name=extractor.display_name,
+                    is_success=False,
+                    error_message=str(e)
+                ))
+
+    def _estimate_cost(self, model_id: str, pages: int) -> float:
+        """Rough USD cost estimate based on pages/model."""
+        # Simple heuristic mapping
+        pricing = {
+            "gpt-4o": 0.01 * pages,        # $0.01 per page (vision + extraction)
+            "gpt-4o-mini": 0.002 * pages,  # $0.002 per page
+            "azure_di": 0.05 * pages,     # $0.05 per page
+            "primary": 0.01 * pages
+        }
+        return round(pricing.get(model_id, 0.01 * pages), 4)
+
+    def _calculate_quality_score(self, result: ExtractionResult) -> float:
+        """
+        Calculates a 0-100 quality score based on:
+        1. Completeness (70%): Percentage of schema fields that returned a non-null value.
+        2. Confidence (30%): Average field-level confidence returned by the AI.
+        
+        Formula: (Completeness * 0.7) + (AvgConfidence * 30)
+        """
+        if not result.structured_data:
+            return 0.0
+            
+        # Count non-null fields recursively
+        def count_fields(data: Any) -> tuple[int, int]:
+            total = 0
+            extracted = 0
+            if isinstance(data, dict):
+                for v in data.values():
+                    t, e = count_fields(v)
+                    total += t
+                    extracted += e
+            elif isinstance(data, list):
+                # For lists, we just count the list as 1 field or sum elements?
+                # Simplified: count each non-empty list as a success hit
+                total += 1
+                if data:
+                    extracted += 1
+            else:
+                total = 1
+                extracted = 1 if data is not None and data != "" else 0
+            return total, extracted
+
+        total, extracted = count_fields(result.structured_data)
+        completeness = (extracted / total * 100) if total > 0 else 0
+        
+        # Combine completeness and confidence
+        score = (completeness * 0.7) + (result.overall_confidence * 100 * 0.3)
+        return round(score, 1)
 
     def _should_flag_for_review(self, result: ExtractionResult) -> bool:
         """Determine if the document needs human review."""

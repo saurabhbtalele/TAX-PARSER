@@ -26,7 +26,7 @@ class Settings(BaseSettings):
         default=0.85,
         description="Minimum confidence score before flagging for human review",
     )
-    image_dpi: int = Field(default=300, description="DPI for PDF-to-image conversion")
+    image_dpi: int = Field(default=450, description="DPI for PDF-to-image conversion")
     max_pages_per_call: int = Field(
         default=10,
         description="Maximum pages sent in a single LLM call",
@@ -36,6 +36,20 @@ class Settings(BaseSettings):
         default=None,
         description="If set, intermediate images and prompts are saved here for debugging",
     )
+
+    # Multi-Model Comparison Settings
+    active_comparison_models: list[str] = Field(
+        default=["gpt-4o", "gpt-4o-mini"],
+        description="List of model IDs to run for comparison",
+    )
+
+    # Additional Model Keys (Optional - application won't break if missing)
+    gemini_api_key: str | None = Field(default=None, description="Google Gemini API key")
+    mistral_api_key: str | None = Field(default=None, description="Mistral AI API key")
+    anthropic_api_key: str | None = Field(default=None, description="Anthropic API key")
+
+    # OpenAI Mini (if different from main deployment)
+    openai_mini_deployment: str = Field(default="gpt-4o-mini", description="Deployment name for smaller model")
 
 
 def get_settings() -> Settings:

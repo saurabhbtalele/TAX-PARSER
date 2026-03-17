@@ -25,6 +25,8 @@ from tax_parser.preprocessor import image_to_base64
 from tax_parser.prompts.extraction_prompts import build_extraction_prompt
 from tax_parser.schemas import get_json_schema_for_form
 
+from tax_parser.extractors.factory import ExtractorFactory
+
 if TYPE_CHECKING:
     from config.settings import Settings
 
@@ -34,15 +36,26 @@ logger = logging.getLogger(__name__)
 class LLMExtractor(BaseExtractor):
     """Extract tax data from scanned forms using GPT-4o Vision."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, deployment_override: str | None = None) -> None:
         self._client = AzureOpenAI(
             azure_endpoint=settings.azure_openai_endpoint,
             api_key=settings.azure_openai_key,
             api_version=settings.azure_openai_api_version,
         )
-        self._deployment = settings.azure_openai_deployment
+        self._deployment = deployment_override or settings.azure_openai_deployment
         self._confidence_threshold = settings.confidence_threshold
         self._max_pages = settings.max_pages_per_call
+
+    @property
+    def model_id(self) -> str:
+        return "gpt-4o"
+
+    @property
+    def display_name(self) -> str:
+        return "GPT-4o Vision"
+
+    def is_available(self, settings: Settings) -> bool:
+        return bool(settings.azure_openai_key and settings.azure_openai_endpoint)
 
     @property
     def supported_forms(self) -> set[FormType]:
@@ -225,7 +238,6 @@ class LLMExtractor(BaseExtractor):
                 needs_review=needs_review,
                 review_reason=f"Low confidence ({conf:.2f})" if needs_review else None,
             )
-
             if needs_review and value is not None:
                 review_flags.append(
                     ReviewFlag(
@@ -234,3 +246,23 @@ class LLMExtractor(BaseExtractor):
                         message=f"LLM confidence {conf:.2f} below threshold {self._confidence_threshold}",
                     )
                 )
+
+
+class GPT4oMiniExtractor(LLMExtractor):
+    """Lighter version of the LLM extractor using gpt-4o-mini."""
+
+    def __init__(self, settings: Settings) -> None:
+        super().__init__(settings, deployment_override=settings.openai_mini_deployment)
+
+    @property
+    def model_id(self) -> str:
+        return "gpt-4o-mini"
+
+    @property
+    def display_name(self) -> str:
+        return "GPT-4o Mini"
+
+
+# Register extractors
+ExtractorFactory.register("gpt-4o", LLMExtractor)
+ExtractorFactory.register("gpt-4o-mini", GPT4oMiniExtractor)

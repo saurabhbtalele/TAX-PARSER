@@ -131,6 +131,19 @@ class PageResult(BaseModel):
     raw_text: str | None = None
 
 
+class ModelComparisonMetrics(BaseModel):
+    """Metrics for comparing different AI models."""
+
+    model_id: str
+    model_name: str
+    confidence: float = 0.0
+    cost: float = 0.0  # Estimated USD cost
+    time: float = 0.0  # Processing time in seconds
+    quality_score: float = 0.0  # Derived score 0-100
+    is_success: bool = True
+    error_message: str | None = None
+
+
 class ExtractionResult(BaseModel):
     """Top-level result for a complete document."""
 
@@ -155,3 +168,6 @@ class ExtractionResult(BaseModel):
 
     # Timing
     processing_time_seconds: float = 0.0
+
+    # Model comparisons
+    comparisons: list[ModelComparisonMetrics] = Field(default_factory=list)

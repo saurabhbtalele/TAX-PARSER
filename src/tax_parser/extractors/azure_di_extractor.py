@@ -11,6 +11,7 @@ from azure.core.credentials import AzureKeyCredential
 from PIL import Image
 
 from tax_parser.extractors.base import BaseExtractor
+from tax_parser.extractors.factory import ExtractorFactory
 from tax_parser.models.result import (
     AZURE_DI_FORMS,
     ExtractionResult,
@@ -52,6 +53,17 @@ class AzureDIExtractor(BaseExtractor):
             credential=AzureKeyCredential(settings.azure_di_key),
         )
         self._confidence_threshold = settings.confidence_threshold
+
+    @property
+    def model_id(self) -> str:
+        return "azure_di"
+
+    @property
+    def display_name(self) -> str:
+        return "Azure Document Intelligence"
+
+    def is_available(self, settings: Settings) -> bool:
+        return bool(settings.azure_di_key and settings.azure_di_endpoint)
 
     @property
     def supported_forms(self) -> set[FormType]:
@@ -188,3 +200,7 @@ class AzureDIExtractor(BaseExtractor):
         else:
             # Fallback: use content string
             return getattr(field, "content", None) or getattr(field, "value", None)
+
+
+# Register extractor
+ExtractorFactory.register("azure_di", AzureDIExtractor)

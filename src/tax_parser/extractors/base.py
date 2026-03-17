@@ -13,6 +13,23 @@ from tax_parser.models.result import ExtractionResult, FormType
 class BaseExtractor(ABC):
     """Interface that all extractors must implement."""
 
+    @property
+    @abstractmethod
+    def model_id(self) -> str:
+        """Unique identifier for this model."""
+        ...
+
+    @property
+    @abstractmethod
+    def display_name(self) -> str:
+        """Human-readable name for the UI."""
+        ...
+
+    @abstractmethod
+    def is_available(self, settings: Any) -> bool:
+        """Check if required configuration (API keys, etc.) is available."""
+        ...
+
     @abstractmethod
     def extract(
         self,
