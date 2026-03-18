@@ -31,20 +31,29 @@ async def parse_document(
         with os.fdopen(fd, 'wb') as f:
             f.write(await file.read())
         
-        # Determine FormType
+        # Determine FormType — resilient: wrong type falls back to auto-detect
         form_type_hint = None
+        skip_classification = False
         if form_type and form_type.strip():
             form_type_val = form_type.strip()
             for ft in FormType:
                 if ft.value == form_type_val:
                     form_type_hint = ft
                     break
+            if form_type_hint is None:
+                logger.warning(
+                    "User provided form type '%s' does not match any known FormType. "
+                    "Falling back to auto-detect.",
+                    form_type_val,
+                )
+            else:
+                skip_classification = True
 
         # Process document
         result = engine.process_document(
             tmp_path,
             form_type_hint=form_type_hint,
-            skip_classification=form_type_hint is not None
+            skip_classification=skip_classification,
         )
         
         return JSONResponse(content=result.model_dump(mode='json'))

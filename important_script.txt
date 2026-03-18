@@ -1,0 +1,7 @@
+# Copy K-1 files only and run on those
+mkdir output\k1_only
+copy tax_returns_business\*K1*.pdf output\k1_only\
+.venv\Scripts\python -m scripts.batch_runner output\k1_only -o output\k1_results.csv
+
+
+.venv\Scripts\python -m scripts.batch_runner D:\TAX_LLM_BASED\TAX-PARSER\tax_returns_business --output output/verification_batch.csv --log-level INFO

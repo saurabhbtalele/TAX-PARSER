@@ -393,16 +393,16 @@
             background: rgba(255, 255, 255, 0.05);
             text-align: left;
             padding: 1rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
         .comparison-table td {
-            padding: 1rem;
+            padding: 0.85rem 1rem;
             border-top: 1px solid var(--border);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         .comparison-table tr:hover td {
             background: rgba(255, 255, 255, 0.02);
@@ -417,6 +417,68 @@
         .best-performer {
             color: #34D399;
             font-weight: 700;
+        }
+        .quality-bar {
+            display: inline-block;
+            height: 6px;
+            border-radius: 3px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .quality-bar.high { background: #34D399; }
+        .quality-bar.mid  { background: #FBBF24; }
+        .quality-bar.low  { background: #F87171; }
+        .winner-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #34D399, #10B981);
+            color: #064E3B;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+        .expand-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .expand-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+        .detail-row td {
+            padding: 0 !important;
+            border-top: none !important;
+        }
+        .detail-content {
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: pre-wrap;
+            border-top: 1px solid var(--border);
+        }
+        .quality-header {
+            position: relative;
+        }
+        .quality-tip {
+            cursor: help;
+            font-size: 0.7rem;
+            margin-left: 2px;
+            opacity: 0.7;
+        }
+        .quality-tip:hover {
+            opacity: 1;
         }
     </style>
 </head>
@@ -442,11 +504,11 @@
             <div class="input-group">
                 <label for="form_type">Form Type / Hint (Optional)</label>
                 <select id="form_type" name="form_type">
-                    <!-- <option value="">Auto-detect via AI</option> -->
+                    <option value="">Auto-detect via AI</option>
                     <option value="1120-S">1120-S (U.S. Income Tax Return for an S Corp)</option>
                     <option value="1065">1065 (U.S. Return of Partnership Income)</option>
-                    <!-- <option value="1120">1120 (U.S. Corporation Income Tax Return)</option> -->
-                    <!-- <option value="W-2">W-2 (Wage and Tax Statement)</option> -->
+                    <option value="1120">1120 (U.S. Corporation Income Tax Return)</option>
+                    <option value="W-2">W-2 (Wage and Tax Statement)</option>
                     <option value="1040">1040 (U.S. Individual Income Tax Return)</option>
                     <option value="Schedule K-1 (Partnership)">Schedule K-1 (Partnership 1065)</option>
                     <option value="Schedule K-1 (S-Corp)">Schedule K-1 (S-Corp 1120-S)</option>
@@ -495,7 +557,12 @@
                         <th>Confidence</th>
                         <th>Est. Cost</th>
                         <th>Time</th>
-                        <th>Quality</th>
+                        <th>Fields</th>
+                        <th class="quality-header">
+                            Quality
+                            <span class="quality-tip" title="Quality = (Required Fields Extracted / Total Required Fields) × 100&#10;&#10;Each form type has specific must-have fields.&#10;If the model extracts all required fields → 100%.&#10;Missing required fields reduce the score.">ℹ️</span>
+                        </th>
+                        <th>Details</th>
                     </tr>
                 </thead>
                 <tbody id="comparison-body"></tbody>
@@ -695,37 +762,83 @@
                 comparisonContainer.style.display = 'block';
                 comparisonBody.innerHTML = '';
                 
-                // Find best performers for highlighting
+                // Find best performers (only from successful models)
+                const successModels = data.comparisons.filter(c => c.is_success);
                 const bests = {
-                    confidence: Math.max(...data.comparisons.map(c => c.confidence || 0)),
-                    cost: Math.min(...data.comparisons.map(c => c.cost || 999)),
-                    time: Math.min(...data.comparisons.map(c => c.time || 999)),
-                    quality: Math.max(...data.comparisons.map(c => c.quality_score || 0))
+                    confidence: Math.max(...successModels.map(c => c.confidence || 0)),
+                    cost: Math.min(...successModels.filter(c => c.cost > 0).map(c => c.cost || 999)),
+                    time: Math.min(...successModels.filter(c => c.time > 0).map(c => c.time || 999)),
+                    quality: Math.max(...successModels.map(c => c.quality_score || 0))
                 };
+                // Find overall winner (highest quality)
+                const winnerQuality = bests.quality;
 
-                data.comparisons.forEach(comp => {
+                data.comparisons.forEach((comp, idx) => {
                     const tr = document.createElement('tr');
                     
                     if (!comp.is_success) {
                         tr.innerHTML = `
                             <td class="model-name">${comp.model_name}</td>
-                            <td colspan="4" style="color: #F87171; font-size: 0.8rem;">Error: ${comp.error_message || 'Unknown error'}</td>
+                            <td colspan="6" style="color: #F87171; font-size: 0.8rem;">Error: ${comp.error_message || 'Unknown error'}</td>
                         `;
                     } else {
                         const isBestConf = comp.confidence === bests.confidence;
                         const isBestCost = comp.cost === bests.cost;
                         const isBestTime = comp.time === bests.time;
                         const isBestQual = comp.quality_score === bests.quality;
+                        const isWinner = comp.quality_score === winnerQuality;
+
+                        // Quality bar color
+                        const qs = comp.quality_score || 0;
+                        const barClass = qs >= 70 ? 'high' : qs >= 40 ? 'mid' : 'low';
+                        const barWidth = Math.min(qs, 100);
+
+                        const fieldsStr = `${comp.fields_extracted || 0}/${comp.fields_total || 0}`;
 
                         tr.innerHTML = `
-                            <td class="model-name">${comp.model_name}</td>
+                            <td class="model-name">
+                                ${comp.model_name}
+                                ${isWinner ? '<span class="winner-badge">Winner</span>' : ''}
+                            </td>
                             <td class="metric-value ${isBestConf ? 'best-performer' : ''}">${Math.round((comp.confidence || 0) * 100)}%</td>
                             <td class="metric-value ${isBestCost ? 'best-performer' : ''}">$${(comp.cost || 0).toFixed(4)}</td>
                             <td class="metric-value ${isBestTime ? 'best-performer' : ''}">${(comp.time || 0).toFixed(2)}s</td>
-                            <td class="metric-value ${isBestQual ? 'best-performer' : ''}">${(comp.quality_score || 0).toFixed(1)}</td>
+                            <td class="metric-value">${fieldsStr}</td>
+                            <td class="metric-value ${isBestQual ? 'best-performer' : ''}">
+                                ${qs.toFixed(1)}
+                                <span class="quality-bar ${barClass}" style="width:${barWidth * 0.5}px"></span>
+                            </td>
+                            <td><button class="expand-btn" data-idx="${idx}">▶ View</button></td>
                         `;
                     }
                     comparisonBody.appendChild(tr);
+
+                    // Add hidden detail row
+                    if (comp.is_success && comp.structured_data && Object.keys(comp.structured_data).length > 0) {
+                        const detailTr = document.createElement('tr');
+                        detailTr.className = 'detail-row';
+                        detailTr.id = `detail-${idx}`;
+                        detailTr.style.display = 'none';
+                        detailTr.innerHTML = `
+                            <td colspan="7">
+                                <div class="detail-content">${JSON.stringify(comp.structured_data, null, 2)}</div>
+                            </td>
+                        `;
+                        comparisonBody.appendChild(detailTr);
+                    }
+                });
+
+                // Toggle detail rows
+                comparisonBody.querySelectorAll('.expand-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = btn.dataset.idx;
+                        const row = document.getElementById(`detail-${idx}`);
+                        if (row) {
+                            const isHidden = row.style.display === 'none';
+                            row.style.display = isHidden ? 'table-row' : 'none';
+                            btn.textContent = isHidden ? '▼ Hide' : '▶ View';
+                        }
+                    });
                 });
             } else {
                 comparisonContainer.style.display = 'none';

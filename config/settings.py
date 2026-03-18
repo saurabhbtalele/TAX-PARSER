@@ -39,17 +39,21 @@ class Settings(BaseSettings):
 
     # Multi-Model Comparison Settings
     active_comparison_models: list[str] = Field(
-        default=["gpt-4o", "gpt-4o-mini"],
+        default=["gpt-4o", "gpt-4o-mini", "gemini-2.0-flash"],
         description="List of model IDs to run for comparison",
     )
 
     # Additional Model Keys (Optional - application won't break if missing)
     gemini_api_key: str | None = Field(default=None, description="Google Gemini API key")
+    gemini_model_name: str = Field(default="gemini-2.0-flash", description="Gemini model name")
     mistral_api_key: str | None = Field(default=None, description="Mistral AI API key")
     anthropic_api_key: str | None = Field(default=None, description="Anthropic API key")
 
     # OpenAI Mini (if different from main deployment)
     openai_mini_deployment: str = Field(default="gpt-4o-mini", description="Deployment name for smaller model")
+
+    # Case Folder Pipeline
+    case_output_dir: str = Field(default="output/cases", description="Directory for structured case folders")
 
 
 def get_settings() -> Settings:

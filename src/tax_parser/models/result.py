@@ -143,6 +143,12 @@ class ModelComparisonMetrics(BaseModel):
     is_success: bool = True
     error_message: str | None = None
 
+    # In-depth comparison data
+    structured_data: dict[str, Any] = Field(default_factory=dict)
+    fields_extracted: int = 0
+    fields_total: int = 0
+    review_flags_count: int = 0
+
 
 class ExtractionResult(BaseModel):
     """Top-level result for a complete document."""
