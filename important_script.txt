@@ -5,3 +5,6 @@ copy tax_returns_business\*K1*.pdf output\k1_only\
 
 
 .venv\Scripts\python -m scripts.batch_runner D:\TAX_LLM_BASED\TAX-PARSER\tax_returns_business --output output/verification_batch.csv --log-level INFO
+
+.venv\Scripts\python -m scripts.batch_runner D:\TAX_LLM_BASED\TAX-PARSER\tax_returns_business\1065_K1_1.pdf --output output/single_result.csv --log-level INFO
+

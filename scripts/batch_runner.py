@@ -133,21 +133,29 @@ def _find_case_folder(result: ExtractionResult) -> str:
 
 
 def run_batch(
-    pdf_dir: Path,
+    pdf_input: Path,
     output_csv: Path,
     form_type_hint: FormType | None = None,
 ) -> None:
-    """Process all PDFs in a directory and write comparison CSV."""
+    """Process PDF(s) from a directory or a single file and write comparison CSV."""
 
-    pdfs = sorted(pdf_dir.glob("*.pdf"))
+    if pdf_input.is_file():
+        if pdf_input.suffix.lower() == ".pdf":
+            pdfs = [pdf_input]
+        else:
+            print(f"❌ File is not a PDF: {pdf_input}")
+            sys.exit(1)
+    else:
+        pdfs = sorted(pdf_input.glob("*.pdf"))
+
     if not pdfs:
-        print(f"❌ No PDF files found in {pdf_dir}")
+        print(f"❌ No PDF files found for: {pdf_input}")
         sys.exit(1)
 
     print(f"\n{'='*60}")
     print(f"  TAX-PARSER Batch Runner")
     print(f"{'='*60}")
-    print(f"  📁 Input folder : {pdf_dir}")
+    print(f"  📁 Input folder : {pdf_input}")
     print(f"  📄 PDFs found   : {len(pdfs)}")
     print(f"  💾 Output CSV   : {output_csv}")
     if form_type_hint:
@@ -300,7 +308,7 @@ Examples:
     form_type = _parse_form_type(args.form_type)
 
     run_batch(
-        pdf_dir=args.pdf_dir,
+        pdf_input=args.pdf_dir,
         output_csv=args.output,
         form_type_hint=form_type,
     )

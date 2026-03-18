@@ -130,22 +130,33 @@ def remove_watermark(img: Image.Image, method: str = "color") -> Image.Image:
     return _cv2_to_pil(cv_img)
 
 
+def sharpen_image(img: np.ndarray) -> np.ndarray:
+    """Apply a mild sharpening filter to enhance text edges."""
+    # Using a mild unsharp mask approach
+    blurred = cv2.GaussianBlur(img, (0, 0), 3)
+    return cv2.addWeighted(img, 1.5, blurred, -0.5, 0)
+
+
 def enhance_image(img: Image.Image) -> Image.Image:
-    """Apply general image enhancement: light denoising + contrast normalization."""
+    """Apply general image enhancement: light denoising + contrast normalization + sharpening."""
     cv_img = _pil_to_cv2(img)
 
-    # Convert to grayscale for processing, keep color original
+    # Convert to grayscale for processing
     gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
 
     # Adaptive histogram equalization (CLAHE) for contrast
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    enhanced_gray = clahe.apply(gray)
+    # Reduced clipLimit from 2.0 to 1.5 to be less aggressive
+    clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
 
-    # Light denoising (reduced h from 10 to 4 to preserve text sharpness)
-    enhanced_gray = cv2.fastNlMeansDenoising(enhanced_gray, h=4)
+    # Very light denoising (reduced h from 4 to 2 to preserve fine text details)
+    enhanced = cv2.fastNlMeansDenoising(enhanced, h=2)
+
+    # Sharpening to bring back text crispness
+    enhanced = sharpen_image(enhanced)
 
     # Convert back to 3-channel for consistency
-    enhanced_bgr = cv2.cvtColor(enhanced_gray, cv2.COLOR_GRAY2BGR)
+    enhanced_bgr = cv2.cvtColor(enhanced, cv2.COLOR_GRAY2BGR)
     return _cv2_to_pil(enhanced_bgr)
 
 

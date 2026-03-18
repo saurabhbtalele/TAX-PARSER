@@ -32,6 +32,10 @@ class Settings(BaseSettings):
         description="Maximum pages sent in a single LLM call",
     )
     log_level: str = Field(default="INFO")
+    enable_preprocessing: bool = Field(
+        default=False,
+        description="Global toggle for image preprocessing (deskew, watermark removal, enhancement)",
+    )
     debug_artifacts_dir: str | None = Field(
         default=None,
         description="If set, intermediate images and prompts are saved here for debugging",

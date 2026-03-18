@@ -115,9 +115,11 @@ class TaxParserEngine:
             logger.info("Saved %d raw page image(s) → %s", total_pages, debug_dir / "1_raw_images")
 
         # 2. Preprocess each page
-        if skip_preprocessing:
+        if skip_preprocessing or not self._settings.enable_preprocessing:
             processed_images = raw_images
             quality_metrics = []
+            if not self._settings.enable_preprocessing and not skip_preprocessing:
+                logger.info("Preprocessing is disabled in settings, skipping.")
         else:
             processed_images = []
             quality_metrics = []
