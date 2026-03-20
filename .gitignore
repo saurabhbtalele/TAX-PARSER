@@ -36,3 +36,4 @@ tax_returns_business/
 debug_flow
 
 output/
+*.xlsx
