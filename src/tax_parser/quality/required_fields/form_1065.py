@@ -13,7 +13,7 @@ REQUIRED_FIELDS: list[str] = [
     "deductions.line_21_total_deductions",
 
     # Bottom line
-    "income.line_22_ordinary_business_income",
+    "deductions.line_22_ordinary_business_income",
 
     # Schedule K
     "schedule_k.line_1_ordinary_business_income",

@@ -586,6 +586,45 @@
         .tip:hover::after {
             opacity: 1;
         }
+
+        /* Checkbox Group Styles */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+        .checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .checkbox-item input {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .checkbox-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+        .checkbox-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -607,6 +646,14 @@
                 </div>
             </div>
 
+            <div class="input-group" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(79, 70, 229, 0.1); padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(79, 70, 229, 0.2);">
+                <input type="checkbox" id="enable_preprocessing" name="enable_preprocessing" checked style="width: 1.2rem; height: 1.2rem; accent-color: var(--primary); cursor: pointer;">
+                <label for="enable_preprocessing" style="margin-bottom: 0; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+                    Enable Image Enhancement (6-Step Pipeline)
+                    <span style="display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 400;">Denoise, Sharpen, Deskew & Upscale (Best for scans)</span>
+                </label>
+            </div>
+
             <div class="input-group">
                 <label for="form_type">Form Type / Hint (Optional)</label>
                 <select id="form_type" name="form_type">
@@ -619,6 +666,43 @@
                     <option value="Schedule K-1 (Partnership)">Schedule K-1 (Partnership 1065)</option>
                     <option value="Schedule K-1 (S-Corp)">Schedule K-1 (S-Corp 1120-S)</option>
                 </select>
+            </div>
+
+            <div class="input-group">
+                <label>Extraction Strategy (Multi-select)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="extraction_strategy" value="gemini" checked>
+                        <div>
+                            <span class="checkbox-label">Gemini 2.0 Flash</span>
+                            <span class="checkbox-desc">Fast & Accurate (Google)</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="extraction_strategy" value="openai4o" checked>
+                        <div>
+                            <span class="checkbox-label">GPT-4o Vision</span>
+                            <span class="checkbox-desc">High-Quality Standard (OpenAI)</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="extraction_strategy" value="openai4o-mini">
+                        <div>
+                            <span class="checkbox-label">GPT-4o Mini</span>
+                            <span class="checkbox-desc">Cost Effective (OpenAI)</span>
+                        </div>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="extraction_strategy" value="azuredi">
+                        <div>
+                            <span class="checkbox-label">Azure Document Intelligence</span>
+                            <span class="checkbox-desc">Best for standard IRS forms</span>
+                        </div>
+                    </label>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+                    Select one or more models to run in parallel.
+                </div>
             </div>
 
             <button type="submit" id="submit-btn">Extract Data</button>
@@ -900,6 +984,10 @@
         }
 
         const formData = new FormData(form);
+        
+        // Handle skip_preprocessing flag (inverse of checkbox)
+        const isPreprocessEnabled = document.getElementById('enable_preprocessing').checked;
+        formData.append('skip_preprocessing', (!isPreprocessEnabled).toString());
 
         // Update UI state
         submitBtn.style.display = 'none';

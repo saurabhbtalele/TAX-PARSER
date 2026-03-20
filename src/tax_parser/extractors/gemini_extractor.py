@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import json
 import logging
-import base64
 import io
 from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
 from PIL import Image
+import google.genai as genai
+from google.genai import types
+
+import google.genai as genai
+from google.genai import types
 
 from tax_parser.extractors.base import BaseExtractor
 from tax_parser.extractors.factory import ExtractorFactory
@@ -33,18 +37,17 @@ logger = logging.getLogger(__name__)
 
 
 class GeminiExtractor(BaseExtractor):
-    """Extract tax data using Google Gemini Vision."""
+    """Extract tax data using Google Gemini Vision (New SDK)."""
 
     def __init__(self, settings: Settings) -> None:
-        import google.generativeai as genai
-
         self._api_key = settings.gemini_api_key or ""
+        self._client = None
         if self._api_key:
-            genai.configure(api_key=self._api_key)
+            self._client = genai.Client(api_key=self._api_key)
+        
         self._model_name = settings.gemini_model_name
         self._confidence_threshold = settings.confidence_threshold
         self._max_pages = settings.max_pages_per_call
-        self._genai = genai
 
     @property
     def model_id(self) -> str:
@@ -78,15 +81,18 @@ class GeminiExtractor(BaseExtractor):
 
         # Build image parts for Gemini
         pages_to_send = page_images[: self._max_pages]
-        image_parts = []
+        contents = [prompt]
+        
         for img in pages_to_send:
             buf = io.BytesIO()
             img.save(buf, format="PNG")
             buf.seek(0)
-            image_parts.append({
-                "mime_type": "image/png",
-                "data": buf.getvalue(),
-            })
+            contents.append(
+                types.Part.from_bytes(
+                    data=buf.getvalue(), 
+                    mime_type="image/png"
+                )
+            )
 
         # Save debug artifacts
         if debug_dir:
@@ -97,14 +103,18 @@ class GeminiExtractor(BaseExtractor):
                 img.save(gemini_debug / f"page_sent_{i:03d}.png")
 
         logger.info(
-            "Calling Gemini for %s extraction (%d pages)",
+            "Calling Gemini (New SDK) for %s extraction (%d pages)",
             form_type.value,
             len(pages_to_send),
         )
 
-        model = self._genai.GenerativeModel(self._model_name)
-        content = [prompt] + image_parts
-        response = model.generate_content(content)
+        if not self._client:
+            raise ValueError("Gemini API Client not initialized. Check API key.")
+
+        response = self._client.models.generate_content(
+            model=self._model_name,
+            contents=contents
+        )
 
         raw_response = response.text or "{}"
         raw_response = raw_response.strip()
@@ -162,16 +172,12 @@ class GeminiExtractor(BaseExtractor):
         confidences = [fv.confidence for fv in field_values.values() if fv.value is not None]
         overall_confidence = sum(confidences) / len(confidences) if confidences else 0.0
 
-        # Extract token usage if available
+        # Extract token usage
         input_tokens = None
         output_tokens = None
-        try:
-            # Gemini usage metadata structure can vary by version, attempting safe access
-            if hasattr(response, 'usage_metadata'):
-                input_tokens = response.usage_metadata.prompt_token_count
-                output_tokens = response.usage_metadata.candidates_token_count
-        except (AttributeError, Exception):
-            pass
+        if hasattr(response, 'usage_metadata') and response.usage_metadata:
+            input_tokens = getattr(response.usage_metadata, 'prompt_token_count', None)
+            output_tokens = getattr(response.usage_metadata, 'candidates_token_count', None)
 
         return ExtractionResult(
             source_file="",

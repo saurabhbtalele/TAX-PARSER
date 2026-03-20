@@ -22,6 +22,7 @@ from tax_parser.models.result import (
     ReviewSeverity,
 )
 from tax_parser.preprocessor import image_to_bytes
+import io
 
 if TYPE_CHECKING:
     from config.settings import Settings
@@ -81,12 +82,28 @@ class AzureDIExtractor(BaseExtractor):
         if model_id is None:
             raise ValueError(f"No Azure DI model for form type: {form_type.value}")
 
-        # Prefer raw PDF bytes when available (preserves original quality);
-        # fall back to re-encoded first page image.
-        if pdf_bytes is not None:
-            document_content = pdf_bytes
+        # We always prefer to send the PREPROCESSED images to Azure, as they have 
+        # been denoised, sharpened, and deskewed. This significantly improves 
+        # Azure's extraction quality compared to sending the raw (noisy) scan.
+        # It also avoids 'InvalidContent' errors if the original PDF was corrupt.
+        
+        pdf_buffer = io.BytesIO()
+        try:
+            # Convert all processed pages into a single high-quality PDF
+            # We use the first image as the base and append the rest
+            rgb_images = [img.convert("RGB") for img in page_images]
+            rgb_images[0].save(
+                pdf_buffer,
+                format="PDF",
+                save_all=True,
+                append_images=rgb_images[1:],
+                resolution=300.0,
+            )
+            document_content = pdf_buffer.getvalue()
             content_type = "application/pdf"
-        else:
+            logger.info("Sending %d preprocessed pages as a clean PDF to Azure", len(page_images))
+        except Exception as e:
+            logger.warning("Failed to rebuild PDF from images: %s. Falling back to first page image.", e)
             document_content = image_to_bytes(page_images[0], fmt="PNG")
             content_type = "image/png"
 

@@ -2,7 +2,7 @@ import os
 import tempfile
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, File, UploadFile, Form, HTTPException
 from fastapi.responses import JSONResponse
@@ -18,7 +18,9 @@ engine = TaxParserEngine()
 @router.post("/parse")
 async def parse_document(
     file: UploadFile = File(...),
-    form_type: Optional[str] = Form(None)
+    form_type: Optional[str] = Form(None),
+    extraction_strategy: Optional[List[str]] = Form(None),
+    skip_preprocessing: Optional[str] = Form("false")
 ):
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
@@ -54,6 +56,8 @@ async def parse_document(
             tmp_path,
             form_type_hint=form_type_hint,
             skip_classification=skip_classification,
+            extraction_strategy=extraction_strategy,
+            skip_preprocessing=skip_preprocessing.lower() == "true",
         )
         
         return JSONResponse(content=result.model_dump(mode='json'))

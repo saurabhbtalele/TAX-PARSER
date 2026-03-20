@@ -62,6 +62,7 @@ LLM_EXTRACTION_FORMS: set[FormType] = {
     FormType.FORM_1065,
     FormType.FORM_1120S,
     FormType.FORM_1120,
+    FormType.W2,
 }
 
 

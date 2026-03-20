@@ -27,7 +27,7 @@ from tax_parser.models.result import (
     ReviewFlag,
     ReviewSeverity,
 )
-from tax_parser.preprocessor import pdf_to_images, preprocess_page
+from tax_parser.preprocessor import TaxDocPreprocessor, PreprocessorConfig, pdf_to_images
 from tax_parser.quality import calculate_required_field_quality
 from tax_parser.validators.tax_rules import TaxValidator
 
@@ -57,6 +57,13 @@ class TaxParserEngine:
         self._llm_extractor = LLMExtractor(self._settings)
         self._validator = TaxValidator()
 
+        # Build preprocessor config from settings
+        preprocess_config = PreprocessorConfig(
+            target_dpi=getattr(self._settings, 'image_dpi', 300),
+            save_steps=getattr(self._settings, 'preprocessing_save_steps', False),
+        )
+        self._preprocessor = TaxDocPreprocessor(config=preprocess_config)
+
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
@@ -67,6 +74,7 @@ class TaxParserEngine:
         form_type_hint: FormType | None = None,
         skip_classification: bool = False,
         skip_preprocessing: bool = False,
+        extraction_strategy: str | None = None,
     ) -> ExtractionResult:
         """Process a single tax document PDF end-to-end.
 
@@ -75,6 +83,9 @@ class TaxParserEngine:
             form_type_hint: If known, skip classification and use this type.
             skip_classification: If True and form_type_hint is set, skip the classifier.
             skip_preprocessing: If True, skip deskew/watermark removal.
+            extraction_strategy: Optional strategy or list of strategies 
+                ('azuredi', 'openai4o', 'openai4o-mini', 'gemini', 'all').
+                If not specified, defaults to Gemini + GPT-4o.
 
         Returns:
             ExtractionResult with structured data, confidence scores, and review flags.
@@ -123,9 +134,15 @@ class TaxParserEngine:
         else:
             processed_images = []
             quality_metrics = []
+            preprocess_steps_dir = case_dir / "02_preprocessed" / "steps"
             for i, img in enumerate(raw_images):
                 logger.info("Preprocessing page %d / %d", i + 1, total_pages)
-                processed, quality = preprocess_page(img)
+                # Determine per-page steps directory (only created if save_steps=True)
+                page_steps_dir = (
+                    preprocess_steps_dir / f"page_{i + 1:03d}"
+                    if self._preprocessor.config.save_steps else None
+                )
+                processed, quality = self._preprocessor.process_image(img, steps_dir=page_steps_dir)
                 processed_images.append(processed)
                 quality_metrics.append(quality)
 
@@ -180,13 +197,110 @@ class TaxParserEngine:
 
         # 4. Route to appropriate extractor
         pdf_bytes = pdf_path.read_bytes()
-        result = self._route_extraction(form_type, processed_images, pdf_bytes, debug_dir=debug_dir)
         
+        # Convert string to list if needed
+        strategies = []
+        if extraction_strategy:
+            if isinstance(extraction_strategy, str):
+                strategies = [s.strip().lower() for s in extraction_strategy.split(',')]
+            else:
+                strategies = [s.strip().lower() for s in extraction_strategy]
+        
+        # Determine primary model based on strategies
+        primary_model_override = None
+        for strategy in strategies:
+            if "azure" in strategy:
+                primary_model_override = "azure_di"
+                break
+            elif "openai4o" in strategy and "mini" not in strategy:
+                primary_model_override = "gpt-4o"
+                break
+            elif "mini" in strategy:
+                primary_model_override = "gpt-4o-mini"
+                break
+            elif "gemini" in strategy:
+                primary_model_override = "gemini-2.0-flash"
+                break
+        
+        # Determine primary model candidates (in order of preference)
+        primary_candidates = []
+        if primary_model_override:
+            primary_candidates.append(primary_model_override)
+        
+        # Add Gemini as a high-reliability fallback if it's not already the primary
+        if "gemini-2.0-flash" not in primary_candidates:
+            primary_candidates.append("gemini-2.0-flash")
+
+        # 4. Attempt primary extraction with fallbacks
+        result = None
+        last_error = None
+        tried_models = []
+
+        for model_id in primary_candidates:
+            try:
+                logger.info("Attempting primary extraction with model: %s", model_id)
+                result = self._route_extraction(
+                    form_type, 
+                    processed_images, 
+                    pdf_bytes, 
+                    model_id_override=model_id,
+                    debug_dir=debug_dir
+                )
+                break # Success!
+            except Exception as e:
+                logger.error("Primary model %s failed: %s", model_id, e)
+                last_error = e
+                tried_models.append(model_id)
+
+        # If all candidates failed, try default routing as last resort
+        if not result:
+            try:
+                logger.info("All preferred candidates failed, trying default routing fallback")
+                result = self._route_extraction(form_type, processed_images, pdf_bytes, debug_dir=debug_dir)
+            except Exception as e:
+                logger.error("Final fallback failed: %s", e)
+                # Create a graceful Error Result so the API doesn't 500
+                result = ExtractionResult(
+                    source_file=str(pdf_path),
+                    total_pages=len(processed_images),
+                    form_type=form_type,
+                    extraction_method="failed",
+                    review_flags=[ReviewFlag(severity=ReviewSeverity.ERROR, message=f"All extraction models failed: {e}")],
+                    needs_human_review=True,
+                    metadata={"error": str(e), "tried_models": tried_models}
+                )
+
         # Capture primary extraction time for comparison
         result.processing_time_seconds = round(time.time() - start_time, 2)
 
         # 5. Populate Comparisons
-        self._run_comparisons(result, form_type, processed_images, pdf_bytes, debug_dir=debug_dir, case_dir=case_dir)
+        comparison_models = []
+        if "all" in strategies:
+            comparison_models = self._settings.active_comparison_models
+        elif not strategies:
+            # Default: gemini and gpt-4o
+            comparison_models = ["gemini-2.0-flash", "gpt-4o"]
+        else:
+            # Map selected strategies to model IDs
+            for s in strategies:
+                mid = None
+                if "azure" in s: mid = "azure_di"
+                elif "openai4o" in s and "mini" not in s: mid = "gpt-4o"
+                elif "mini" in s: mid = "gpt-4o-mini"
+                elif "gemini" in s: mid = "gemini-2.0-flash"
+                
+                if mid and mid != primary_model_override:
+                    comparison_models.append(mid)
+        
+        self._run_comparisons(
+            result, 
+            form_type, 
+            processed_images, 
+            pdf_bytes, 
+            active_ids_override=comparison_models,
+            debug_dir=debug_dir, 
+            case_dir=case_dir
+        )
 
         # 6. Populate metadata
         result.source_file = str(pdf_path)
@@ -281,9 +395,17 @@ class TaxParserEngine:
         form_type: FormType,
         page_images: list[Image.Image],
         pdf_bytes: bytes,
+        model_id_override: str | None = None,
         debug_dir: Path | None = None,
     ) -> ExtractionResult:
-        """Route to the correct extractor based on form type."""
+        """Route to the correct extractor based on form type or override."""
+
+        if model_id_override:
+            logger.info("Routing to explicit override model: %s", model_id_override)
+            extractor = ExtractorFactory.get_extractor(model_id_override, self._settings)
+            if extractor:
+                return extractor.extract(form_type, page_images, pdf_bytes, debug_dir=debug_dir)
+            logger.warning("Override model %s not found, falling back to default routing", model_id_override)
 
         if form_type in AZURE_DI_FORMS:
             logger.info("Routing to Azure Document Intelligence")
@@ -307,6 +429,7 @@ class TaxParserEngine:
         form_type: FormType,
         page_images: list[Image.Image],
         pdf_bytes: bytes,
+        active_ids_override: list[str] | None = None,
         debug_dir: Path | None = None,
         case_dir: Path | None = None,
     ) -> None:
@@ -389,8 +512,8 @@ class TaxParserEngine:
                 json.dumps(primary_result.metadata, indent=2, default=str), encoding="utf-8"
             )
 
-        # 2. Run ALL active comparison models (universal — works for any form type)
-        active_ids = self._settings.active_comparison_models
+        # 2. Run active comparison models
+        active_ids = active_ids_override if active_ids_override is not None else self._settings.active_comparison_models
         for model_id in active_ids:
             if model_id == primary_model_id:
                 continue

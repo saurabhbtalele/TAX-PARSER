@@ -33,8 +33,12 @@ class Settings(BaseSettings):
     )
     log_level: str = Field(default="INFO")
     enable_preprocessing: bool = Field(
-        default=False,
+        default=True,
         description="Global toggle for image preprocessing (deskew, watermark removal, enhancement)",
+    )
+    preprocessing_save_steps: bool = Field(
+        default=False,
+        description="If True, save each pipeline step image to 02_preprocessed/steps/ for debugging",
     )
     debug_artifacts_dir: str | None = Field(
         default=None,
