@@ -7,6 +7,10 @@ from typing import Type
 from tax_parser.models.result import FormType
 from tax_parser.schemas.base import BaseTaxForm
 from tax_parser.schemas.form_1040 import Form1040
+from tax_parser.schemas.form_1040_b import ScheduleB
+from tax_parser.schemas.form_1040_c import ScheduleC
+from tax_parser.schemas.form_1040_d import ScheduleD
+from tax_parser.schemas.form_1040_e import ScheduleE
 from tax_parser.schemas.form_1065 import Form1065
 from tax_parser.schemas.form_1120 import Form1120
 from tax_parser.schemas.form_1120s import Form1120S
@@ -16,6 +20,10 @@ from tax_parser.schemas.schedule_k1_1120s import ScheduleK1SCorp
 # Registry: FormType enum → schema class
 SCHEMA_REGISTRY: dict[FormType, Type[BaseTaxForm]] = {
     FormType.FORM_1040: Form1040,
+    FormType.SCHEDULE_B: ScheduleB,
+    FormType.SCHEDULE_C: ScheduleC,
+    FormType.SCHEDULE_D: ScheduleD,
+    FormType.SCHEDULE_E: ScheduleE,
     FormType.FORM_1065: Form1065,
     FormType.FORM_1120: Form1120,
     FormType.FORM_1120S: Form1120S,
@@ -42,6 +50,10 @@ __all__ = [
     "get_schema_for_form",
     "get_json_schema_for_form",
     "Form1040",
+    "ScheduleB",
+    "ScheduleC",
+    "ScheduleD",
+    "ScheduleE",
     "Form1065",
     "Form1120",
     "Form1120S",

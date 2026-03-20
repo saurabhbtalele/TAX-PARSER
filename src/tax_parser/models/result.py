@@ -53,6 +53,10 @@ AZURE_DI_FORMS: set[FormType] = {
 
 # Forms handled by custom LLM extraction
 LLM_EXTRACTION_FORMS: set[FormType] = {
+    FormType.SCHEDULE_B,
+    FormType.SCHEDULE_C,
+    FormType.SCHEDULE_D,
+    FormType.SCHEDULE_E,
     FormType.SCHEDULE_K1_PARTNERSHIP,
     FormType.SCHEDULE_K1_SCORP,
     FormType.FORM_1065,
