@@ -183,5 +183,11 @@ class ExtractionResult(BaseModel):
     processing_time_seconds: float = 0.0
     metadata: dict[str, Any] = Field(default_factory=dict, description="Model-specific telemetry: prompt, usage, etc.")
 
+    # Field descriptions from schema (dotted path → human description)
+    field_descriptions: dict[str, str] = Field(
+        default_factory=dict,
+        description="Maps dotted field paths to their schema descriptions, e.g. 'entity.ein' → 'Corporation's EIN (Box A)'"
+    )
+
     # Model comparisons
     comparisons: list[ModelComparisonMetrics] = Field(default_factory=list)

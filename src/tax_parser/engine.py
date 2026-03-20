@@ -193,6 +193,9 @@ class TaxParserEngine:
         result.total_pages = total_pages
         result.form_type = form_type
 
+        # 6b. Attach field descriptions from the schema
+        result.field_descriptions = self._extract_field_descriptions(form_type)
+
         # Attach quality metrics to page results
         for i, page_result in enumerate(result.pages):
             if i < len(quality_metrics):
@@ -309,30 +312,51 @@ class TaxParserEngine:
     ) -> None:
         """Run ALL available models for comparison and populate in-depth metrics."""
 
-        # Helper to count fields
-        def _count_fields(data: Any) -> tuple[int, int]:
-            total = 0
+        # Helper to count extracted (non-null) leaf fields in a data dict
+        def _count_extracted(data: Any) -> int:
             extracted = 0
             if isinstance(data, dict):
                 for v in data.values():
-                    t, e = _count_fields(v)
-                    total += t
-                    extracted += e
+                    extracted += _count_extracted(v)
             elif isinstance(data, list):
-                total += 1
                 if data:
                     extracted += 1
             else:
-                total = 1
-                extracted = 1 if data is not None and data != "" else 0
-            return total, extracted
+                extracted += 1 if data is not None and data != "" else 0
+            return extracted
+
+        # Count total expected fields from the JSON schema (same for all models)
+        def _count_schema_fields(schema: dict) -> int:
+            """Count leaf fields from a JSON schema recursively."""
+            total = 0
+            props = schema.get("properties", {})
+            for _name, prop_schema in props.items():
+                # Resolve $ref / $defs if present
+                ref = prop_schema.get("$ref")
+                if ref and "$defs" in schema:
+                    ref_name = ref.split("/")[-1]
+                    prop_schema = schema.get("$defs", {}).get(ref_name, prop_schema)
+
+                prop_type = prop_schema.get("type", "")
+                if prop_type == "object" or "properties" in prop_schema:
+                    total += _count_schema_fields(prop_schema)
+                elif prop_type == "array":
+                    # count array as 1 field
+                    total += 1
+                else:
+                    total += 1
+            return total
+
+        from tax_parser.schemas import get_json_schema_for_form
+        json_schema = get_json_schema_for_form(form_type)
+        schema_total = _count_schema_fields(json_schema) if json_schema else 0
 
         # 1. Add primary model result as the first comparison
         primary_model_id = getattr(
             self._llm_extractor if primary_result.extraction_method == "llm" else self._azure_extractor,
             "model_id", "primary"
         )
-        p_total, p_extracted = _count_fields(primary_result.structured_data)
+        p_extracted = _count_extracted(primary_result.structured_data)
         total_cost = self._calculate_model_cost(primary_model_id, primary_result)
         primary_metrics = ModelComparisonMetrics(
             model_id=primary_model_id,
@@ -345,7 +369,7 @@ class TaxParserEngine:
             is_success=True,
             structured_data=primary_result.structured_data,
             fields_extracted=p_extracted,
-            fields_total=p_total,
+            fields_total=schema_total,
             review_flags_count=len(primary_result.review_flags),
             prompt=primary_result.metadata.get("prompt"),
             raw_response=primary_result.metadata.get("raw_response"),
@@ -382,7 +406,7 @@ class TaxParserEngine:
                 comp_result = extractor.extract(form_type, page_images, pdf_bytes, debug_dir=debug_dir)
                 comp_time = round(time.time() - comp_start, 2)
 
-                c_total, c_extracted = _count_fields(comp_result.structured_data)
+                c_extracted = _count_extracted(comp_result.structured_data)
                 total_cost = self._calculate_model_cost(model_id, comp_result)
                 metrics = ModelComparisonMetrics(
                     model_id=model_id,
@@ -395,7 +419,7 @@ class TaxParserEngine:
                     is_success=True,
                     structured_data=comp_result.structured_data,
                     fields_extracted=c_extracted,
-                    fields_total=c_total,
+                    fields_total=schema_total,
                     review_flags_count=len(comp_result.review_flags),
                     prompt=comp_result.metadata.get("prompt"),
                     raw_response=comp_result.metadata.get("raw_response"),
@@ -423,6 +447,56 @@ class TaxParserEngine:
                     is_success=False,
                     error_message=str(e),
                 ))
+
+    def _extract_field_descriptions(self, form_type: FormType) -> dict[str, str]:
+        """Extract a flat map of dotted field paths → descriptions from the JSON schema.
+        
+        For example, for Schedule K-1 (S-Corp):
+          'entity.ein' → "Corporation's employer identification number (Box A)"
+          'income_deductions.line_1_ordinary_business_income' → "Ordinary business income(loss) (Line 1)"
+        """
+        from tax_parser.schemas import get_json_schema_for_form
+
+        schema = get_json_schema_for_form(form_type)
+        if not schema:
+            return {}
+
+        defs = schema.get("$defs", {})
+        descriptions: dict[str, str] = {}
+
+        def _walk(props: dict, prefix: str = "") -> None:
+            for name, prop in props.items():
+                path = f"{prefix}.{name}" if prefix else name
+
+                # Resolve $ref
+                ref = prop.get("$ref")
+                if ref:
+                    ref_name = ref.split("/")[-1]
+                    prop = defs.get(ref_name, prop)
+
+                # Also handle allOf with $ref (Pydantic pattern)
+                all_of = prop.get("allOf")
+                if all_of:
+                    for item in all_of:
+                        r = item.get("$ref")
+                        if r:
+                            ref_name = r.split("/")[-1]
+                            prop = {**defs.get(ref_name, {}), **prop}
+                            break
+
+                desc = prop.get("description", "")
+                sub_props = prop.get("properties")
+
+                if sub_props:
+                    # It's an object — recurse into it
+                    _walk(sub_props, path)
+                else:
+                    # It's a leaf field
+                    if desc:
+                        descriptions[path] = desc
+
+        _walk(schema.get("properties", {}))
+        return descriptions
 
     def _calculate_model_cost(self, model_id: str, result: ExtractionResult) -> float:
         """

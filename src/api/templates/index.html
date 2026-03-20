@@ -554,6 +554,38 @@
             border: 1px solid var(--border);
             white-space: pre-wrap;
         }
+
+        /* Tooltip System */
+        .tip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted rgba(165, 180, 252, 0.4);
+        }
+        .tip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1E293B;
+            color: #E2E8F0;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            white-space: pre-line;
+            width: max-content;
+            max-width: 280px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+        }
+        .tip:hover::after {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -606,19 +638,19 @@
         <div id="dashboard" class="dashboard">
             <div class="stat-card">
                 <div class="value" id="stat-form-type">-</div>
-                <div class="label">Form Type</div>
+                <div class="label tip" data-tip="The IRS form type detected by the AI classifier.&#10;Examples: 1120-S, 1065, Schedule K-1.">Form Type</div>
             </div>
             <div class="stat-card">
                 <div class="value" id="stat-confidence">-</div>
-                <div class="label">Confidence</div>
+                <div class="label tip" data-tip="Average confidence score across all extracted fields.&#10;Higher = the model is more certain about its extractions.&#10;Below 80% triggers a human review flag.">Confidence</div>
             </div>
             <div class="stat-card">
                 <div class="value" id="stat-taxpayer">-</div>
-                <div class="label">Taxpayer</div>
+                <div class="label tip" data-tip="The taxpayer or entity name extracted from&#10;the form header (e.g., corporation name).">Taxpayer</div>
             </div>
             <div class="stat-card">
                 <div class="value" id="stat-status">-</div>
-                <div class="label">Status</div>
+                <div class="label tip" data-tip="Whether a human should review this extraction.&#10;Triggered by low confidence, missing fields,&#10;or validation rule failures.">Status</div>
             </div>
         </div>
         
@@ -627,16 +659,16 @@
             <table class="comparison-table">
                 <thead>
                     <tr>
-                        <th>Model</th>
-                        <th>Confidence</th>
-                        <th>Est. Cost</th>
-                        <th>Time</th>
-                        <th>Fields</th>
-                        <th class="quality-header">
+                        <th class="tip" data-tip="The AI model used for extraction.">Model</th>
+                        <th class="tip" data-tip="Average confidence across all extracted fields.&#10;Reported directly by the model's API.&#10;Higher = more certain.">Confidence</th>
+                        <th class="tip" data-tip="Estimated USD cost for this extraction,&#10;calculated from actual token usage&#10;and 2026 API pricing.">Est. Cost</th>
+                        <th class="tip" data-tip="Wall-clock time to complete the extraction.&#10;Includes network latency and model inference.">Time</th>
+                        <th class="tip" data-tip="Fields Extracted / Fields in Schema.&#10;Fields Total is based on the JSON schema,&#10;so it's the same for every model.">Fields</th>
+                        <th class="quality-header tip" data-tip="Quality = % of required fields extracted.&#10;Required fields are specific to each form type&#10;(e.g., EIN, income lines for K-1).&#10;A non-None value counts as extracted,&#10;including $0 and empty strings.">
                             Quality
-                            <span class="quality-tip" title="Quality = (Required Fields Extracted / Total Required Fields) × 100&#10;&#10;Each form type has specific must-have fields.&#10;If the model extracts all required fields → 100%.&#10;Missing required fields reduce the score.">ℹ️</span>
+                            <span class="quality-tip" title="Quality = (Required Fields Extracted / Total Required Fields) × 100">ℹ️</span>
                         </th>
-                        <th>Details</th>
+                        <th class="tip" data-tip="Click 'View' to see the full telemetry:&#10;prompt sent, raw response, token usage.">Details</th>
                     </tr>
                 </thead>
                 <tbody id="comparison-body"></tbody>
@@ -644,15 +676,15 @@
         </div>
 
         <div id="flags-container" class="flags-list">
-            <h3>⚠️ Review Flags</h3>
+            <h3 class="tip" data-tip="Warnings and errors generated by extraction&#10;and validation rules. These highlight fields&#10;needing human review.">⚠️ Review Flags</h3>
             <ul id="flags-list"></ul>
         </div>
         
         <div class="tab-header">
             <div class="tabs" id="json-tabs">
-                <button class="tab-btn active" data-tab="full">Full JSON</button>
-                <button class="tab-btn" data-tab="reduced">Reduced JSON</button>
-                <button class="tab-btn" data-tab="fields">Field Comparison</button>
+                <button class="tab-btn active" data-tab="full" title="The complete, unfiltered JSON response including all metadata, comparisons, and extracted data.">Full JSON</button>
+                <button class="tab-btn" data-tab="reduced" title="Simplified view showing only the structured data fields without internal metadata.">Reduced JSON</button>
+                <button class="tab-btn" data-tab="fields" title="Side-by-side comparison of every extracted field across all models. Red cells indicate where models disagree.">Field Comparison</button>
             </div>
             <button id="copy-btn" class="copy-btn" title="Copy to clipboard">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -764,17 +796,22 @@
         const sortedPaths = Array.from(fieldPaths).sort();
         
         // Header
-        let headHtml = '<tr><th>Field Name</th>';
+        let headHtml = '<tr><th class="tip" data-tip="Dotted path name of each schema field.&#10;Description from the schema is shown below.">Field Name</th>';
         models.forEach(m => {
             headHtml += `<th>${m.model_name}</th>`;
         });
         headHtml += '</tr>';
         head.innerHTML = headHtml;
 
+        // Get field descriptions
+        const fieldDescs = currentData.field_descriptions || {};
+
         // Rows
         let bodyHtml = '';
         sortedPaths.forEach(path => {
-            let rowHtml = `<tr><td class="field-name-cell">${path}</td>`;
+            const desc = fieldDescs[path] || '';
+            const descHtml = desc ? `<div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;">${desc}</div>` : '';
+            let rowHtml = `<tr><td class="field-name-cell">${path}${descHtml}</td>`;
             const values = models.map(m => {
                 const parts = path.split('.');
                 let curr = m.structured_data;
@@ -984,32 +1021,32 @@
                             <td colspan="7">
                                 <div style="padding: 1.5rem; background: rgba(0,0,0,0.4); border-top: 1px solid var(--border);">
                                     <div class="telemetry-grid">
-                                        <div class="telemetry-item">
+                                        <div class="telemetry-item" title="Number of tokens sent TO the model (prompt + images). Provided directly by the model's API.">
                                             <div class="telemetry-label">Input Tokens</div>
                                             <div class="telemetry-value">${inputTok}</div>
                                         </div>
-                                        <div class="telemetry-item">
+                                        <div class="telemetry-item" title="Number of tokens generated BY the model (JSON response). Provided directly by the model's API.">
                                             <div class="telemetry-label">Output Tokens</div>
                                             <div class="telemetry-value">${outputTok}</div>
                                         </div>
-                                        <div class="telemetry-item">
+                                        <div class="telemetry-item" title="Sum of Input + Output tokens. Higher total = more expensive.">
                                             <div class="telemetry-label">Total Tokens</div>
                                             <div class="telemetry-value">${totalTok}</div>
                                         </div>
-                                        <div class="telemetry-item">
+                                        <div class="telemetry-item" title="Total cost divided by number of pages. Useful for comparing per-page efficiency across models.">
                                             <div class="telemetry-label">Cost Per Page</div>
                                             <div class="telemetry-value">$${(comp.cost_per_page || 0).toFixed(4)}</div>
                                         </div>
-                                        <div class="telemetry-item">
+                                        <div class="telemetry-item" title="Wall-clock time from sending the API request to receiving the full response.">
                                             <div class="telemetry-label">Extraction Time</div>
                                             <div class="telemetry-value">${(comp.time || 0).toFixed(2)}s</div>
                                         </div>
                                     </div>
                                     
-                                    <div style="margin-bottom: 0.5rem; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Prompt Sent (redacted)</div>
+                                    <div style="margin-bottom: 0.5rem; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;" title="The exact text prompt sent to the model. Images are omitted for display.">Prompt Sent (redacted)</div>
                                     <div class="prompt-viewer">${comp.prompt || 'Prompt not recorded.'}</div>
                                     
-                                    <div style="margin: 1rem 0 0.5rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Raw JSON Response</div>
+                                    <div style="margin: 1rem 0 0.5rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;" title="The raw text response from the model before any parsing or processing.">Raw JSON Response</div>
                                     <div class="prompt-viewer">${comp.raw_response || 'Raw response not recorded.'}</div>
                                 </div>
                             </td>

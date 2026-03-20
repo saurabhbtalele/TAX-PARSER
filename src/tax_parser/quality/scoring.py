@@ -41,10 +41,12 @@ def calculate_required_field_quality(
     
     Logic:
     - total: Total number of required fields for this form type (e.g., 39 for K-1 Partnership).
-    - found: AI emitted this key in JSON with any value (including 0 or empty string).
+    - found: AI emitted this key in JSON (key exists, value is not None).
              This shows 'Model Recognition' - the AI found where the field should be.
-    - extracted: AI pulled a non-null, non-empty value. 
-                 This shows 'Extraction Coverage' - the field has actual data for underwriting.
+    - extracted: AI pulled a meaningful value (not None).
+                 IMPORTANT: 0, False, and "" ARE valid extractions in tax forms!
+                 e.g. Line 1: Ordinary Income = 0 is a real, valid data point.
+                 Only None (field missing entirely) counts as "not extracted".
 
     Returns:
         (quality_score 0-100, fields_found, fields_required)
@@ -59,24 +61,20 @@ def calculate_required_field_quality(
     for path in required:
         value = resolve_dotted_path(structured_data, path)
         
-        # If the key exists in the path resolution (not None/Missing)
-        # In our implementation, resolve_dotted_path returns None if key is missing.
-        # But for tax forms, '0' or '' are real extractions.
+        # resolve_dotted_path returns None if key is missing from the JSON.
+        # Any non-None value means the model both recognized AND extracted the field.
+        # In tax forms, 0, False, and "" are legitimate extracted values:
+        #   - Income line = 0 means $0 income (valid data)
+        #   - Checkbox = False means unchecked (valid data)
+        #   - Empty string for optional text fields (valid recognition)
         
         if value is not None:
             found_keys += 1
-            # If it's a "real" value (non-empty string, non-zero number)
-            if value != "" and value != 0:
-                extracted_values += 1
+            extracted_values += 1
 
-    # Final Quality Score is a weighted blend:
-    # Finding the field is 40% of the score (AI intelligence)
-    # Extracting a non-empty value is 60% of the score (Data completeness)
-    
-    recognition_score = (found_keys / len(required)) * 100
-    extraction_score = (extracted_values / len(required)) * 100
-    
-    # Simple average for now, but leans towards discovery as requested
-    quality = (recognition_score * 0.5) + (extraction_score * 0.5)
+    # Quality = percentage of required fields that were found and extracted.
+    # Since recognition and extraction are now equivalent (both require non-None),
+    # the score directly reflects data completeness.
+    quality = (extracted_values / len(required)) * 100
     
     return round(quality, 1), found_keys, len(required)
