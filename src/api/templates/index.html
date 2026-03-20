@@ -480,6 +480,80 @@
         .quality-tip:hover {
             opacity: 1;
         }
+        
+        /* Side-by-side Field Comparison */
+        .field-comparison-section {
+            display: none;
+            margin-top: 3rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+        .field-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .field-table th {
+            background: rgba(255, 255, 255, 0.05);
+            text-align: left;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .field-table td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            vertical-align: top;
+        }
+        .field-name-cell {
+            font-family: 'Consolas', monospace;
+            color: #A5B4FC;
+            font-weight: 500;
+            width: 30%;
+        }
+        .diff-mismatch {
+            color: #F87171;
+            background: rgba(239, 68, 68, 0.05);
+        }
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .telemetry-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+        }
+        .telemetry-label {
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+        .telemetry-value {
+            font-weight: 600;
+            color: #A5B4FC;
+        }
+        .prompt-viewer {
+            background: #000;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.75rem;
+            color: #94A3B8;
+            border: 1px solid var(--border);
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -578,6 +652,7 @@
             <div class="tabs" id="json-tabs">
                 <button class="tab-btn active" data-tab="full">Full JSON</button>
                 <button class="tab-btn" data-tab="reduced">Reduced JSON</button>
+                <button class="tab-btn" data-tab="fields">Field Comparison</button>
             </div>
             <button id="copy-btn" class="copy-btn" title="Copy to clipboard">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -593,6 +668,16 @@
                 <div>Awaiting submission...</div>
             </div>
         </pre>
+
+        <div id="field-comparison-container" class="field-comparison-section">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: #A5B4FC;">🔍 Field-by-Field Analysis</h3>
+            <div style="overflow-x: auto;">
+                <table class="field-table">
+                    <thead id="field-table-head"></thead>
+                    <tbody id="field-table-body"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -632,12 +717,83 @@
     function updateResultDisplay() {
         if (!currentData) return;
         
-        if (currentTab === 'full') {
-            resultOutput.textContent = JSON.stringify(currentData, null, 2);
+        const preview = document.getElementById('result-output');
+        const fieldComp = document.getElementById('field-comparison-container');
+
+        if (currentTab === 'fields') {
+            preview.style.display = 'none';
+            fieldComp.style.display = 'block';
+            renderFieldComparison();
         } else {
-            const reducedData = getReducedJson(currentData);
-            resultOutput.textContent = JSON.stringify(reducedData, null, 2);
+            preview.style.display = 'block';
+            fieldComp.style.display = 'none';
+            if (currentTab === 'full') {
+                preview.textContent = JSON.stringify(currentData, null, 2);
+            } else {
+                const reducedData = getReducedJson(currentData);
+                preview.textContent = JSON.stringify(reducedData, null, 2);
+            }
         }
+    }
+
+    function renderFieldComparison() {
+        if (!currentData || !currentData.comparisons) return;
+        
+        const head = document.getElementById('field-table-head');
+        const body = document.getElementById('field-table-body');
+        
+        const models = currentData.comparisons.filter(c => c.is_success);
+        if (models.length === 0) return;
+
+        // Collect all field paths
+        const fieldPaths = new Set();
+        models.forEach(m => {
+            const flatten = (obj, prefix = '') => {
+                for (let k in obj) {
+                    const path = prefix ? `${prefix}.${k}` : k;
+                    if (obj[k] && typeof obj[k] === 'object' && !Array.isArray(obj[k])) {
+                        flatten(obj[k], path);
+                    } else {
+                        fieldPaths.add(path);
+                    }
+                }
+            };
+            flatten(m.structured_data);
+        });
+
+        const sortedPaths = Array.from(fieldPaths).sort();
+        
+        // Header
+        let headHtml = '<tr><th>Field Name</th>';
+        models.forEach(m => {
+            headHtml += `<th>${m.model_name}</th>`;
+        });
+        headHtml += '</tr>';
+        head.innerHTML = headHtml;
+
+        // Rows
+        let bodyHtml = '';
+        sortedPaths.forEach(path => {
+            let rowHtml = `<tr><td class="field-name-cell">${path}</td>`;
+            const values = models.map(m => {
+                const parts = path.split('.');
+                let curr = m.structured_data;
+                for (const p of parts) {
+                    curr = curr ? curr[p] : undefined;
+                }
+                return curr;
+            });
+
+            const allSame = values.every(v => JSON.stringify(v) === JSON.stringify(values[0]));
+            
+            values.forEach(v => {
+                const valStr = (v === null || v === undefined) ? '-' : (typeof v === 'object' ? JSON.stringify(v) : v);
+                rowHtml += `<td class="${!allSame ? 'diff-mismatch' : ''}">${valStr}</td>`;
+            });
+            rowHtml += '</tr>';
+            bodyHtml += rowHtml;
+        });
+        body.innerHTML = bodyHtml;
     }
 
     tabButtons.forEach(btn => {
@@ -814,14 +970,48 @@
                     comparisonBody.appendChild(tr);
 
                     // Add hidden detail row
-                    if (comp.is_success && comp.structured_data && Object.keys(comp.structured_data).length > 0) {
+                    if (comp.is_success) {
                         const detailTr = document.createElement('tr');
                         detailTr.className = 'detail-row';
                         detailTr.id = `detail-${idx}`;
                         detailTr.style.display = 'none';
+                        
+                        const inputTok = comp.input_tokens || 'N/A';
+                        const outputTok = comp.output_tokens || 'N/A';
+                        const totalTok = (comp.input_tokens && comp.output_tokens) ? (comp.input_tokens + comp.output_tokens) : 'N/A';
+
                         detailTr.innerHTML = `
                             <td colspan="7">
-                                <div class="detail-content">${JSON.stringify(comp.structured_data, null, 2)}</div>
+                                <div style="padding: 1.5rem; background: rgba(0,0,0,0.4); border-top: 1px solid var(--border);">
+                                    <div class="telemetry-grid">
+                                        <div class="telemetry-item">
+                                            <div class="telemetry-label">Input Tokens</div>
+                                            <div class="telemetry-value">${inputTok}</div>
+                                        </div>
+                                        <div class="telemetry-item">
+                                            <div class="telemetry-label">Output Tokens</div>
+                                            <div class="telemetry-value">${outputTok}</div>
+                                        </div>
+                                        <div class="telemetry-item">
+                                            <div class="telemetry-label">Total Tokens</div>
+                                            <div class="telemetry-value">${totalTok}</div>
+                                        </div>
+                                        <div class="telemetry-item">
+                                            <div class="telemetry-label">Cost Per Page</div>
+                                            <div class="telemetry-value">$${(comp.cost_per_page || 0).toFixed(4)}</div>
+                                        </div>
+                                        <div class="telemetry-item">
+                                            <div class="telemetry-label">Extraction Time</div>
+                                            <div class="telemetry-value">${(comp.time || 0).toFixed(2)}s</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 0.5rem; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Prompt Sent (redacted)</div>
+                                    <div class="prompt-viewer">${comp.prompt || 'Prompt not recorded.'}</div>
+                                    
+                                    <div style="margin: 1rem 0 0.5rem 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Raw JSON Response</div>
+                                    <div class="prompt-viewer">${comp.raw_response || 'Raw response not recorded.'}</div>
+                                </div>
                             </td>
                         `;
                         comparisonBody.appendChild(detailTr);

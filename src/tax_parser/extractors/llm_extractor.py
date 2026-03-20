@@ -209,6 +209,12 @@ class LLMExtractor(BaseExtractor):
             review_flags=review_flags,
             needs_human_review=len(review_flags) > 0,
             overall_confidence=round(overall_confidence, 3),
+            metadata={
+                "prompt": prompt,
+                "raw_response": raw_response,
+                "input_tokens": getattr(response.usage, "prompt_tokens", None),
+                "output_tokens": getattr(response.usage, "completion_tokens", None),
+            }
         )
 
     def _flatten_fields(

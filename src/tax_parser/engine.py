@@ -333,18 +333,24 @@ class TaxParserEngine:
             "model_id", "primary"
         )
         p_total, p_extracted = _count_fields(primary_result.structured_data)
+        total_cost = self._calculate_model_cost(primary_model_id, primary_result)
         primary_metrics = ModelComparisonMetrics(
             model_id=primary_model_id,
             model_name="Primary (" + primary_result.extraction_method.upper() + ")",
             confidence=primary_result.overall_confidence,
             time=primary_result.processing_time_seconds,
-            cost=self._estimate_cost(primary_result.extraction_method, len(page_images)),
+            cost=total_cost,
+            cost_per_page=round(total_cost / len(page_images), 6) if page_images else total_cost,
             quality_score=self._calculate_quality_score(primary_result, form_type),
             is_success=True,
             structured_data=primary_result.structured_data,
             fields_extracted=p_extracted,
             fields_total=p_total,
             review_flags_count=len(primary_result.review_flags),
+            prompt=primary_result.metadata.get("prompt"),
+            raw_response=primary_result.metadata.get("raw_response"),
+            input_tokens=primary_result.metadata.get("input_tokens"),
+            output_tokens=primary_result.metadata.get("output_tokens"),
         )
         primary_result.comparisons.append(primary_metrics)
 
@@ -354,6 +360,9 @@ class TaxParserEngine:
             primary_dir.mkdir(parents=True, exist_ok=True)
             (primary_dir / "result.json").write_text(
                 json.dumps(primary_result.structured_data, indent=2, default=str), encoding="utf-8"
+            )
+            (primary_dir / "telemetry.json").write_text(
+                json.dumps(primary_result.metadata, indent=2, default=str), encoding="utf-8"
             )
 
         # 2. Run ALL active comparison models (universal — works for any form type)
@@ -374,18 +383,24 @@ class TaxParserEngine:
                 comp_time = round(time.time() - comp_start, 2)
 
                 c_total, c_extracted = _count_fields(comp_result.structured_data)
+                total_cost = self._calculate_model_cost(model_id, comp_result)
                 metrics = ModelComparisonMetrics(
                     model_id=model_id,
                     model_name=extractor.display_name,
                     confidence=comp_result.overall_confidence,
                     time=comp_time,
-                    cost=self._estimate_cost(model_id, len(page_images)),
+                    cost=total_cost,
+                    cost_per_page=round(total_cost / len(page_images), 6) if page_images else total_cost,
                     quality_score=self._calculate_quality_score(comp_result, form_type),
                     is_success=True,
                     structured_data=comp_result.structured_data,
                     fields_extracted=c_extracted,
                     fields_total=c_total,
                     review_flags_count=len(comp_result.review_flags),
+                    prompt=comp_result.metadata.get("prompt"),
+                    raw_response=comp_result.metadata.get("raw_response"),
+                    input_tokens=comp_result.metadata.get("input_tokens"),
+                    output_tokens=comp_result.metadata.get("output_tokens"),
                 )
                 primary_result.comparisons.append(metrics)
 
@@ -395,6 +410,9 @@ class TaxParserEngine:
                     model_dir.mkdir(parents=True, exist_ok=True)
                     (model_dir / "result.json").write_text(
                         json.dumps(comp_result.structured_data, indent=2, default=str), encoding="utf-8"
+                    )
+                    (model_dir / "telemetry.json").write_text(
+                        json.dumps(comp_result.metadata, indent=2, default=str), encoding="utf-8"
                     )
 
             except Exception as e:
@@ -406,16 +424,35 @@ class TaxParserEngine:
                     error_message=str(e),
                 ))
 
-    def _estimate_cost(self, model_id: str, pages: int) -> float:
-        """Rough USD cost estimate based on pages/model."""
-        pricing = {
-            "gpt-4o": 0.01 * pages,
-            "gpt-4o-mini": 0.002 * pages,
-            "azure_di": 0.05 * pages,
-            "gemini-2.0-flash": 0.005 * pages,
-            "primary": 0.01 * pages,
-        }
-        return round(pricing.get(model_id, 0.01 * pages), 4)
+    def _calculate_model_cost(self, model_id: str, result: ExtractionResult) -> float:
+        """
+        Calculate precise USD cost based on token usage or fallback to page counts.
+        Prices updated as of early 2026 standards.
+        """
+        input_tokens = result.metadata.get("input_tokens", 0) or 0
+        output_tokens = result.metadata.get("output_tokens", 0) or 0
+        pages = result.total_pages or 1
+
+        # LLM Pricing (per 1M tokens)
+        # GPT-4o: $2.50 Input, $10.00 Output
+        # GPT-4o-mini: $0.15 Input, $0.60 Output
+        # Gemini 2.0 Flash: $0.10 Input, $0.40 Output
+        
+        if model_id == "gpt-4o":
+            return round((input_tokens * (2.50 / 1_000_000)) + (output_tokens * (10.00 / 1_000_000)), 6)
+        
+        if model_id == "gpt-4o-mini":
+            return round((input_tokens * (0.15 / 1_000_000)) + (output_tokens * (0.60 / 1_000_000)), 6)
+            
+        if model_id == "gemini-2.0-flash":
+            return round((input_tokens * (0.10 / 1_000_000)) + (output_tokens * (0.40 / 1_000_000)), 6)
+
+        if model_id == "azure_di":
+            # Azure Document Intelligence is usually billed per page ($0.05 typical for prebuilt)
+            return round(pages * 0.05, 4)
+
+        # Fallback pricing (estimate)
+        return round(pages * 0.01, 4)
 
     def _calculate_quality_score(self, result: ExtractionResult, form_type: FormType | None = None) -> float:
         """

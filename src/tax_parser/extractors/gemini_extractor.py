@@ -162,6 +162,17 @@ class GeminiExtractor(BaseExtractor):
         confidences = [fv.confidence for fv in field_values.values() if fv.value is not None]
         overall_confidence = sum(confidences) / len(confidences) if confidences else 0.0
 
+        # Extract token usage if available
+        input_tokens = None
+        output_tokens = None
+        try:
+            # Gemini usage metadata structure can vary by version, attempting safe access
+            if hasattr(response, 'usage_metadata'):
+                input_tokens = response.usage_metadata.prompt_token_count
+                output_tokens = response.usage_metadata.candidates_token_count
+        except (AttributeError, Exception):
+            pass
+
         return ExtractionResult(
             source_file="",
             total_pages=len(page_images),
@@ -172,6 +183,12 @@ class GeminiExtractor(BaseExtractor):
             review_flags=review_flags,
             needs_human_review=len(review_flags) > 0,
             overall_confidence=round(overall_confidence, 3),
+            metadata={
+                "prompt": prompt,
+                "raw_response": raw_response,
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+            }
         )
 
     def _flatten_fields(

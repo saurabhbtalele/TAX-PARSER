@@ -138,10 +138,17 @@ class ModelComparisonMetrics(BaseModel):
     model_name: str
     confidence: float = 0.0
     cost: float = 0.0  # Estimated USD cost
+    cost_per_page: float = 0.0  # Cost per page in USD
     time: float = 0.0  # Processing time in seconds
     quality_score: float = 0.0  # Derived score 0-100
     is_success: bool = True
     error_message: str | None = None
+    
+    # In-depth telemetry (Kundali)
+    prompt: str | None = Field(default=None, description="The full text prompt sent to the model")
+    raw_response: str | None = Field(default=None, description="The raw unparsed response text")
+    input_tokens: int | None = Field(default=None, description="Count of input tokens used")
+    output_tokens: int | None = Field(default=None, description="Count of output tokens used")
 
     # In-depth comparison data
     structured_data: dict[str, Any] = Field(default_factory=dict)
@@ -172,8 +179,9 @@ class ExtractionResult(BaseModel):
     needs_human_review: bool = False
     overall_confidence: float = 0.0
 
-    # Timing
+    # Timing and Metadata
     processing_time_seconds: float = 0.0
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Model-specific telemetry: prompt, usage, etc.")
 
     # Model comparisons
     comparisons: list[ModelComparisonMetrics] = Field(default_factory=list)
