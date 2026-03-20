@@ -475,15 +475,25 @@ class TaxParserEngine:
         schema_total = _count_schema_fields(json_schema) if json_schema else 0
 
         # 1. Add primary model result as the first comparison
-        primary_model_id = getattr(
+        primary_model_id = primary_result.model_id or getattr(
             self._llm_extractor if primary_result.extraction_method == "llm" else self._azure_extractor,
             "model_id", "primary"
         )
+        
+        # Determine a friendly display name for the Primary label
+        primary_display_name = "Primary"
+        if primary_model_id == "gemini-2.0-flash":
+            primary_display_name = "Primary (GEMINI)"
+        elif primary_model_id == "azure_di":
+            primary_display_name = "Primary (Azure DI)"
+        elif "gpt-4o" in primary_model_id:
+            primary_display_name = f"Primary ({primary_model_id.upper()})"
+        
         p_extracted = _count_extracted(primary_result.structured_data)
         total_cost = self._calculate_model_cost(primary_model_id, primary_result)
         primary_metrics = ModelComparisonMetrics(
             model_id=primary_model_id,
-            model_name="Primary (" + primary_result.extraction_method.upper() + ")",
+            model_name=primary_display_name,
             confidence=primary_result.overall_confidence,
             time=primary_result.processing_time_seconds,
             cost=total_cost,

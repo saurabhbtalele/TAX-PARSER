@@ -172,6 +172,10 @@ class ExtractionResult(BaseModel):
         default="",
         description="'azure_di' | 'llm' | 'hybrid'",
     )
+    model_id: str = Field(
+        default="",
+        description="The specific model used (e.g., 'gpt-4o', 'gemini-2.0-flash')",
+    )
 
     # Structured output – the fully parsed form data (Pydantic schema dict)
     structured_data: dict[str, Any] = Field(default_factory=dict)

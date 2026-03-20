@@ -184,6 +184,7 @@ class GeminiExtractor(BaseExtractor):
             total_pages=len(page_images),
             form_type=form_type,
             extraction_method="gemini",
+            model_id=self.model_id,
             structured_data=structured_data,
             pages=pages,
             review_flags=review_flags,
