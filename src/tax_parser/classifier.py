@@ -21,36 +21,28 @@ CLASSIFICATION_PROMPT = """\
 You are a tax document classifier. Examine this scanned image of a US tax form page \
 and identify the exact IRS form type.
 
+The form_type MUST be one of:
+- "W-2" (Look for "Wage and Tax Statement", "Employer identification number", Box 1 "Wages, tips, other compensation")
+- "1099-NEC" (Look for "Nonemployee Compensation", "Payer's TIN", "Recipient's TIN", Box 1 "Nonemployee compensation")
+- "1099-R" (Look for "Distributions From Pensions, Annuities, Retirement...")
+- "1099-MISC" (Look for "Miscellaneous Income", Box 1 "Rents", Box 3 "Other income")
+- "1040" (Look for "U.S. Individual Income Tax Return", "Name", "SSN")
+- "Schedule B", "Schedule C", "Schedule D", "Schedule E", "Schedule F"
+- "Schedule K-1 (Partnership)" (Form 1065)
+- "Schedule K-1 (S-Corp)" (Form 1120-S)
+- "1065", "1120-S", "1120"
+- "Unknown"
+
+Differentiating W-2 vs 1099-NEC:
+- A W-2 almost always has the text "W-2" in a large font, often in the bottom-left or top-left, and mentions "Social security wages".
+- A 1099-NEC has "1099-NEC" and focuses on "Nonemployee compensation".
+
 Return ONLY a JSON object with these fields:
 {
   "form_type": "<exact form type>",
   "confidence": <0.0 to 1.0>,
   "page_description": "<brief description of what this page contains>"
 }
-
-The form_type MUST be one of:
-- "W-2"
-- "1099-NEC"
-- "1099-R"
-- "1099-MISC"
-- "1040"
-- "Schedule B"
-- "Schedule C"
-- "Schedule D"
-- "Schedule E"
-- "Schedule F"
-- "Schedule K-1 (Partnership)"
-- "Schedule K-1 (S-Corp)"
-- "1065"
-- "1120-S"
-- "1120"
-- "Unknown"
-
-Look at the form title, form number (usually top-left), and the overall layout to determine the type. \
-If the page is a sub-schedule of a larger form (e.g. Schedule K of Form 1120-S), classify it \
-as the parent form type (e.g. "1120-S"). Schedule K-1 is its own form type only when it is a \
-standalone K-1 distributed to a partner/shareholder, NOT the Schedule K that is part of the \
-main return.
 
 Return valid JSON only, no markdown fences.
 """

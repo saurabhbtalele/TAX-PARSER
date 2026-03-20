@@ -8,3 +8,6 @@ copy tax_returns_business\*K1*.pdf output\k1_only\
 
 .venv\Scripts\python -m scripts.batch_runner D:\TAX_LLM_BASED\TAX-PARSER\tax_returns_business\1065_K1_1.pdf --output output/single_result.csv --log-level INFO
 
+.venv\Scripts\python.exe scripts\batch_runner_excelWorkbook.py --input "D:\TAX_LLM_BASED\TAX-PARSER\tax_returns_business\W2_FORM_CATEGARIZED\batch_w2_random" --output "tax_results_report.xlsx" 2>&1
+
+.\.venv\Scripts\python.exe scripts\batch_runner_excelWorkbook.py --input "D:\PATH\TO\YOUR\PDFS" --output "detailed_comparison.xlsx"
