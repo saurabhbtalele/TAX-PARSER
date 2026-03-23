@@ -10,6 +10,9 @@ from tax_parser.quality.required_fields.form_1120s import REQUIRED_FIELDS as FOR
 from tax_parser.quality.required_fields.form_w2 import REQUIRED_FIELDS as FORM_W2
 from tax_parser.quality.required_fields.schedule_k1_partnership import REQUIRED_FIELDS as K1_PARTNERSHIP
 from tax_parser.quality.required_fields.schedule_k1_scorp import REQUIRED_FIELDS as K1_SCORP
+from tax_parser.quality.required_fields.form_1099_misc import REQUIRED_FIELDS as FORM_1099_MISC
+from tax_parser.quality.required_fields.form_1099_nec import REQUIRED_FIELDS as FORM_1099_NEC
+from tax_parser.quality.required_fields.form_1099_r import REQUIRED_FIELDS as FORM_1099_R
 
 REQUIRED_FIELDS_REGISTRY: dict[FormType, list[str]] = {
     FormType.FORM_1040: FORM_1040,
@@ -19,4 +22,7 @@ REQUIRED_FIELDS_REGISTRY: dict[FormType, list[str]] = {
     FormType.W2: FORM_W2,
     FormType.SCHEDULE_K1_PARTNERSHIP: K1_PARTNERSHIP,
     FormType.SCHEDULE_K1_SCORP: K1_SCORP,
+    FormType.FORM_1099_MISC: FORM_1099_MISC,
+    FormType.FORM_1099_NEC: FORM_1099_NEC,
+    FormType.FORM_1099_R: FORM_1099_R,
 }

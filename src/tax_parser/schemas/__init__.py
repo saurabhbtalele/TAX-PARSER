@@ -15,6 +15,9 @@ from tax_parser.schemas.form_1065 import Form1065
 from tax_parser.schemas.form_1120 import Form1120
 from tax_parser.schemas.form_1120s import Form1120S
 from tax_parser.schemas.form_w2 import W2
+from tax_parser.schemas.form_1099_misc import Form1099MISC
+from tax_parser.schemas.form_1099_nec import Form1099NEC
+from tax_parser.schemas.form_1099_r import Form1099R
 from tax_parser.schemas.schedule_k1_1065 import ScheduleK1Partnership
 from tax_parser.schemas.schedule_k1_1120s import ScheduleK1SCorp
 
@@ -29,6 +32,9 @@ SCHEMA_REGISTRY: dict[FormType, Type[BaseTaxForm]] = {
     FormType.FORM_1120: Form1120,
     FormType.FORM_1120S: Form1120S,
     FormType.W2: W2,
+    FormType.FORM_1099_MISC: Form1099MISC,
+    FormType.FORM_1099_NEC: Form1099NEC,
+    FormType.FORM_1099_R: Form1099R,
     FormType.SCHEDULE_K1_PARTNERSHIP: ScheduleK1Partnership,
     FormType.SCHEDULE_K1_SCORP: ScheduleK1SCorp,
 }
@@ -60,6 +66,9 @@ __all__ = [
     "Form1120",
     "Form1120S",
     "W2",
+    "Form1099MISC",
+    "Form1099NEC",
+    "Form1099R",
     "ScheduleK1Partnership",
     "ScheduleK1SCorp",
 ]

@@ -91,6 +91,30 @@ The form has three main parts:
 Extract the complete data into the following JSON schema:
 """
 
+_FORM_1099_MISC_INSTRUCTIONS = """\
+This is IRS Form 1099-MISC (Miscellaneous Information).
+
+The form contains information about miscellaneous income such as rents, royalties, other income, substitute payments, etc.
+
+Extract the complete data into the following JSON schema:
+"""
+
+_FORM_1099_NEC_INSTRUCTIONS = """\
+This is IRS Form 1099-NEC (Nonemployee Compensation).
+
+The form contains information about nonemployee compensation, direct sales, backup withholding, state tax withheld, etc.
+
+Extract the complete data into the following JSON schema:
+"""
+
+_FORM_1099_R_INSTRUCTIONS = """\
+This is IRS Form 1099-R (Distributions From Pensions, Annuities, Retirement or Profit-Sharing Plans, IRAs, Insurance Contracts, etc.).
+
+The form contains information about gross distribution, taxable amount, capital gain, federal income tax withheld, employee contributions, etc.
+
+Extract the complete data into the following JSON schema:
+"""
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -101,6 +125,9 @@ FORM_INSTRUCTIONS: dict[FormType, str] = {
     FormType.FORM_1065: _FORM_1065_INSTRUCTIONS,
     FormType.SCHEDULE_K1_PARTNERSHIP: _K1_PARTNERSHIP_INSTRUCTIONS,
     FormType.SCHEDULE_K1_SCORP: _K1_SCORP_INSTRUCTIONS,
+    FormType.FORM_1099_MISC: _FORM_1099_MISC_INSTRUCTIONS,
+    FormType.FORM_1099_NEC: _FORM_1099_NEC_INSTRUCTIONS,
+    FormType.FORM_1099_R: _FORM_1099_R_INSTRUCTIONS,
 }
 
 
